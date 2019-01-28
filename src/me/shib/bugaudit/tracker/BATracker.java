@@ -1,6 +1,6 @@
 package me.shib.bugaudit.tracker;
 
-public class BugAuditTracker {
+public class BATracker {
 
 
     public void createIssue() {
