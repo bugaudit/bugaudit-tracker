@@ -2,10 +2,7 @@ package me.shib.bugaudit.tracker;
 
 import me.shib.bugaudit.commons.BugAuditContent;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public final class BatIssueFactory {
 
@@ -14,9 +11,11 @@ public final class BatIssueFactory {
     private String title;
     private BugAuditContent description;
     private String assignee;
+    private List<String> subscribers;
     private String status;
     private int priority;
     private Set<String> labels;
+    private Map<String, String> customFields;
 
     BatIssueFactory() {
         this.labels = new HashSet<>();
@@ -28,6 +27,14 @@ public final class BatIssueFactory {
 
     public void setAssignee(String assignee) {
         this.assignee = assignee;
+    }
+
+    public List<String> getSubscribers() {
+        return subscribers;
+    }
+
+    void setSubscribers(List<String> subscribers) {
+        this.subscribers = subscribers;
     }
 
     public String getProject() {
@@ -84,5 +91,13 @@ public final class BatIssueFactory {
 
     void setLabels(List<String> labels) {
         this.labels.addAll(labels);
+    }
+
+    public Map<String, String> getCustomFields() {
+        return customFields;
+    }
+
+    void setCustomFields(Map<String, String> customFields) {
+        this.customFields = customFields;
     }
 }

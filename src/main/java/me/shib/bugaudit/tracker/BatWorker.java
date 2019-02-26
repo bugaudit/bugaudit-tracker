@@ -9,8 +9,6 @@ import java.util.*;
 
 public abstract class BatWorker {
 
-    private static final int maxSearchResult = 1000;
-
     private BatConfig config;
     private BATracker tracker;
     private BugAuditResult auditResult;
@@ -38,10 +36,12 @@ public abstract class BatWorker {
         batIssueFactory.setProject(config.getProject());
         batIssueFactory.setTitle(bug.getTitle());
         batIssueFactory.setIssueType(config.getIssueType());
-        batIssueFactory.setAssignee(config.getAssignee());
+        batIssueFactory.setAssignee(config.getUsers().getAssignee());
+        batIssueFactory.setSubscribers(config.getUsers().getSubscribers());
         batIssueFactory.setPriority(bug.getPriority());
         batIssueFactory.setDescription(bug.getDescription());
         batIssueFactory.setLabels(labels);
+        batIssueFactory.setCustomFields(config.getCustomFields());
         BatIssue batIssue = tracker.createIssue(batIssueFactory);
         System.out.println("Created new issue: " + batIssue.getKey() + " - " + batIssue.getTitle() + " with priority "
                 + batIssue.getPriority().getName());
@@ -60,7 +60,8 @@ public abstract class BatWorker {
             batIssueFactory.setTitle(bug.getTitle());
             issueUpdated = true;
         }
-        if (config.isDescriptionUpdateAllowed() && !tracker.isContentMatching(bug.getDescription(), batIssue.getDescription())) {
+        if (config.isDescriptionUpdateAllowed() &&
+                !bug.getDescription().getContent(tracker.getContentType()).equalsIgnoreCase(batIssue.getDescription())) {
             batIssueFactory.setDescription(bug.getDescription());
             issueUpdated = true;
         }
@@ -124,7 +125,7 @@ public abstract class BatWorker {
             }
         }
         boolean commented = false;
-        if (config.toClose().isCommentable(tracker, issue, new BugAuditContent(BatConfig.issueFixedComment))) {
+        if (config.toClose().isCommentable(issue, new BugAuditContent(BatConfig.issueFixedComment))) {
             StringBuilder comment = new StringBuilder();
             comment.append(BatConfig.issueFixedComment);
             if (!transitioned) {
@@ -155,7 +156,7 @@ public abstract class BatWorker {
             }
         }
         boolean commented = false;
-        if (config.toOpen().isCommentable(tracker, issue, new BugAuditContent(BatConfig.issueNotFixedComment))) {
+        if (config.toOpen().isCommentable(issue, new BugAuditContent(BatConfig.issueNotFixedComment))) {
             StringBuilder comment = new StringBuilder();
             comment.append(BatConfig.issueNotFixedComment);
             if (!transitioned) {
@@ -205,7 +206,7 @@ public abstract class BatWorker {
         searchLabels.add(result.getLang().toString());
         searchLabels.add(result.getRepo().toString());
         searchQuery.add(BatSearchQuery.Condition.label, BatSearchQuery.Operator.is_in, new ArrayList<>(searchLabels));
-        List<BatIssue> batIssues = tracker.searchBatIssues(config.getProject(), searchQuery, maxSearchResult);
+        List<BatIssue> batIssues = tracker.searchBatIssues(config.getProject(), searchQuery, BatConfig.maxSearchResult);
         if (batIssues.size() == 0) {
             createBatIssueForBug(bug);
         } else if (batIssues.size() == 1) {
@@ -256,7 +257,7 @@ public abstract class BatWorker {
             tags.add(auditResult.getRepo().toString());
             searchQuery.add(BatSearchQuery.Condition.label, BatSearchQuery.Operator.is_in, tags);
             searchQuery.add(BatSearchQuery.Condition.status, BatSearchQuery.Operator.is_not_in, config.getCloseStatuses());
-            List<BatIssue> batIssues = tracker.searchBatIssues(config.getProject(), searchQuery, maxSearchResult);
+            List<BatIssue> batIssues = tracker.searchBatIssues(config.getProject(), searchQuery, BatConfig.maxSearchResult);
             for (BatIssue batIssue : batIssues) {
                 if (!isVulnerabilityExists(batIssue, auditResult.getBugs())) {
                     if (closeIssue(batIssue)) {

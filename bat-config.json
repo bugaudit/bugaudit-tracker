@@ -1,0 +1,140 @@
+{
+  "trackerName": "FreshreleaseTracker",
+  "project": "TEST",
+  "issueType": "Security Bug",
+  "summaryUpdateAllowed": true,
+  "descriptionUpdateAllowed": true,
+  "reprioritizeAllowed": true,
+  "deprioritizeAllowed": true,
+  "closingAllowed": true,
+  "customFields": {
+    "customfield_13612": "13616",
+    "dueBy": "May 22, 2018"
+  },
+  "users": {
+    "assignee": "usera",
+    "subscibers": [
+      "userb",
+      "bob"
+    ]
+  },
+  "transitions": {
+    "In Testing (Branch)": [
+      "Verified in Branch",
+      "Reopened"
+    ],
+    "Done": [
+      "Reopened",
+      "Security Verification In Progress"
+    ],
+    "Security Verified": [
+      "Reporter Verification",
+      "Closed"
+    ],
+    "Reopened": [
+      "In Progress",
+      "Deferred"
+    ],
+    "In Testing (Prestaging)": [
+      "Verified in pre-staging",
+      "Reopened"
+    ],
+    "On Hold": [
+      "Ready to Test",
+      "In Progress"
+    ],
+    "Deferred": [
+      "In Progress"
+    ],
+    "Security Verification In Progress": [
+      "Security Verified"
+    ],
+    "Verified in pre-staging": [
+      "Deployed to few customers",
+      "In Testing (Staging)"
+    ],
+    "In Progress": [
+      "In Review",
+      "Open"
+    ],
+    "Available to all customers": [
+      "Done"
+    ],
+    "Open": [
+      "In Progress",
+      "Deferred"
+    ],
+    "Ready to Test": [
+      "Reopened",
+      "In Testing (Prestaging)",
+      "In Testing (Staging)",
+      "In Testing (Branch)"
+    ],
+    "Reporter Verification": [
+      "Closed"
+    ],
+    "In Review": [
+      "In Progress",
+      "Review Changes Required",
+      "Dev Complete"
+    ],
+    "In Testing (Staging)": [
+      "Reopened",
+      "Deployed to few customers"
+    ],
+    "Closed": [
+      "Reopened"
+    ],
+    "Dev Complete": [
+      "Ready to Test",
+      "On Hold"
+    ],
+    "Create": [
+      "Open"
+    ],
+    "Review Changes Required": [
+      "In Progress"
+    ],
+    "Verified in Branch": [
+      "In Testing (Prestaging)"
+    ],
+    "Deployed to few customers": [
+      "Available to all customers"
+    ],
+    "Invalid": [
+      "Closed",
+      "Reopened"
+    ]
+  },
+  "openStatuses": [
+    "Reopened",
+    "Open"
+  ],
+  "resolvedStatuses": [
+    "Deployed to few customers",
+    "Available to all customers",
+    "Done"
+  ],
+  "closeStatuses": [
+    "Closed",
+    "Security Verified"
+  ],
+  "ignorableLabels": [
+    "igvul",
+    "ignored-vulnerability"
+  ],
+  "ignorableStatuses": [
+    "Deferred",
+    "Invalid"
+  ],
+  "toOpen": {
+    "statusTransferable": false,
+    "commentable": true,
+    "commentInterval": 30
+  },
+  "toClose": {
+    "statusTransferable": true,
+    "commentable": true,
+    "commentInterval": 15
+  }
+}

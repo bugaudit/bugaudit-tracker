@@ -6,22 +6,61 @@ import java.util.List;
 
 public abstract class BATracker {
 
-    public abstract List<String> getStatuses(String projectKey);
+    protected transient BatConfig config;
+    protected transient Credentials credentials;
 
-    public abstract List<BatPriority> getPriorities(String projectKey);
+    protected BATracker(BatConfig config) {
+        this.config = config;
+        this.credentials = new Credentials();
+    }
 
-    public abstract List<BatUser> getUsers(String projectKey);
+    protected abstract BugAuditContent.Type getContentType();
 
-    public abstract BatIssue createIssue(BatIssueFactory creator);
+    protected abstract List<String> getStatuses(String projectKey);
 
-    public abstract BatIssue updateIssue(BatIssue issue, BatIssueFactory updater);
+    protected abstract List<BatPriority> getPriorities(String projectKey);
 
-    public abstract List<BatIssue> searchBatIssues(String projectKey, BatSearchQuery query, int count);
+    protected abstract List<BatUser> getUsers(String projectKey);
 
-    public abstract BatComment addComment(String projectKey, int issueId, BatComment batComment);
+    protected abstract BatIssue createIssue(BatIssueFactory creator);
 
-    public abstract List<BatComment> getComments(String projectKey, int issueId);
+    protected abstract BatIssue updateIssue(BatIssue issue, BatIssueFactory updater);
 
-    protected abstract boolean isContentMatching(BugAuditContent fromBug, String fromTrackerIssue);
+    protected abstract List<BatIssue> searchBatIssues(String projectKey, BatSearchQuery query, int count);
+
+    protected abstract BatComment addComment(String projectKey, int issueId, BatComment batComment);
+
+    protected abstract List<BatComment> getComments(String projectKey, int issueId);
+
+    protected class Credentials {
+
+        private static transient final String batUsername = "BUGAUDIT_TRACKER_USERNAME";
+        private static transient final String batPassword = "BUGAUDIT_TRACKER_PASSWORD";
+        private static transient final String batApiKey = "BUGAUDIT_TRACKER_API_KEY";
+
+        private String username;
+        private String password;
+
+        private Credentials() {
+            username = System.getenv(batUsername);
+            if (username == null || username.isEmpty()) {
+                password = System.getenv(batApiKey);
+            } else {
+                password = System.getenv(batPassword);
+            }
+        }
+
+        protected String getUsername() {
+            return username;
+        }
+
+        protected String getPassword() {
+            return password;
+        }
+
+        protected String getApiKey() {
+            return password;
+        }
+    }
 
 }

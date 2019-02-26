@@ -5,6 +5,21 @@ import me.shib.bugaudit.commons.BugAuditContent;
 import java.util.List;
 
 public class TesTracker extends BATracker {
+    public TesTracker(BatConfig config) {
+        super(config);
+    }
+
+    public static void main(String[] args) {
+        String packageName = TesTracker.class.getPackage().getName();
+        String className = TesTracker.class.getName();
+        System.out.println(className.replaceFirst(packageName + ".", ""));
+    }
+
+    @Override
+    protected BugAuditContent.Type getContentType() {
+        return null;
+    }
+
     @Override
     public List<String> getStatuses(String projectKey) {
         return null;
