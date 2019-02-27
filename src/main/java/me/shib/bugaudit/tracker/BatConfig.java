@@ -72,15 +72,14 @@ public final class BatConfig {
 
     synchronized BATracker getTracker() {
         if (tracker == null && trackerName != null) {
-            Reflections reflections = new Reflections(this.getClass().getPackage().getName());
+            Reflections reflections = new Reflections(BATracker.class.getPackage().getName());
             Set<Class<? extends BATracker>> trackerClasses = reflections.getSubTypesOf(BATracker.class);
             for (Class<? extends BATracker> trackerClass : trackerClasses) {
                 try {
-                    Class<?> clazz = Class.forName(trackerClass.getName());
-                    Constructor<?> ctor = clazz.getConstructor();
-                    BATracker tracker = (BATracker) ctor.newInstance(this);
-                    if (tracker.getClass().getName().toLowerCase().endsWith(trackerName.toLowerCase())) {
-                        this.tracker = tracker;
+                    if (trackerClass.getName().toLowerCase().endsWith(trackerName.toLowerCase())) {
+                        Class<?> clazz = Class.forName(trackerClass.getName());
+                        Constructor<?> ctor = clazz.getConstructor(BatConfig.class);
+                        this.tracker = (BATracker) ctor.newInstance(this);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

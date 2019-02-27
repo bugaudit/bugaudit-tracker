@@ -1,6 +1,7 @@
 package me.shib.bugaudit.tracker;
 
 import me.shib.bugaudit.commons.BugAuditContent;
+import me.shib.bugaudit.commons.BugAuditException;
 
 import java.util.List;
 
@@ -9,7 +10,7 @@ public abstract class BATracker {
     protected transient BatConfig config;
     protected transient Connection connection;
 
-    protected BATracker(BatConfig config) {
+    public BATracker(BatConfig config) throws BugAuditException {
         this.config = config;
         this.connection = new Connection();
     }
@@ -33,13 +34,22 @@ public abstract class BATracker {
         private String username;
         private String password;
 
-        private Connection() {
+        private Connection() throws BugAuditException {
             this.endpoint = System.getenv(batEndpoint);
+            nullValidation(this.endpoint, batEndpoint);
             this.username = System.getenv(batUsername);
             if (this.username == null || this.username.isEmpty()) {
                 this.password = System.getenv(batApiKey);
+                nullValidation(this.password, batApiKey);
             } else {
                 this.password = System.getenv(batPassword);
+                nullValidation(this.password, batPassword);
+            }
+        }
+
+        private void nullValidation(Object object, String name) throws BugAuditException {
+            if (object == null) {
+                throw new BugAuditException(name + " is a required environment variable");
             }
         }
 

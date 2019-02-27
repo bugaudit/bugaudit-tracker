@@ -5,9 +5,10 @@ import me.shib.bugaudit.commons.BugAuditContent;
 import me.shib.bugaudit.commons.BugAuditException;
 import me.shib.bugaudit.commons.BugAuditResult;
 
+import java.io.IOException;
 import java.util.*;
 
-public abstract class BatWorker {
+public final class BatWorker {
 
     private BatConfig config;
     private BATracker tracker;
@@ -16,8 +17,10 @@ public abstract class BatWorker {
     private int updated;
     private boolean errorFound;
 
-    public BatWorker(BugAuditResult auditResult) {
+    public BatWorker(BugAuditResult auditResult) throws BugAuditException, IOException {
         this.auditResult = auditResult;
+        this.config = BatConfig.getConfig();
+        this.tracker = config.getTracker();
         this.created = 0;
         this.updated = 0;
         this.errorFound = false;
@@ -243,7 +246,7 @@ public abstract class BatWorker {
         System.out.println(changelog);
     }
 
-    protected boolean processResult() throws BugAuditException {
+    public boolean processResult() throws BugAuditException {
         System.out.println("Vulnerabilities found: " + auditResult.getBugs().size());
         for (Bug bug : auditResult.getBugs()) {
             processBug(bug, auditResult);

@@ -1,6 +1,7 @@
 package me.shib.bugaudit.tracker;
 
 import me.shib.bugaudit.commons.BugAuditContent;
+import me.shib.bugaudit.commons.BugAuditException;
 import me.shib.java.lib.utils.JsonUtil;
 
 import java.util.HashMap;
@@ -8,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 public class TesTracker extends BATracker {
-    public TesTracker(BatConfig config) {
+    public TesTracker(BatConfig config) throws BugAuditException {
         super(config);
     }
 
