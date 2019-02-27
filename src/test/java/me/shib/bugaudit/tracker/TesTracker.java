@@ -1,8 +1,11 @@
 package me.shib.bugaudit.tracker;
 
 import me.shib.bugaudit.commons.BugAuditContent;
+import me.shib.java.lib.utils.JsonUtil;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class TesTracker extends BATracker {
     public TesTracker(BatConfig config) {
@@ -10,28 +13,17 @@ public class TesTracker extends BATracker {
     }
 
     public static void main(String[] args) {
-        String packageName = TesTracker.class.getPackage().getName();
+        Map<String, Integer> map = new HashMap<>();
+        map.put("High", 1);
+        map.put("Urgent", 0);
+        System.out.println(new JsonUtil().toPrettyJson(map));
+        /*String packageName = TesTracker.class.getPackage().getName();
         String className = TesTracker.class.getName();
-        System.out.println(className.replaceFirst(packageName + ".", ""));
+        System.out.println(className.replaceFirst(packageName + ".", ""));*/
     }
 
     @Override
     protected BugAuditContent.Type getContentType() {
-        return null;
-    }
-
-    @Override
-    public List<String> getStatuses(String projectKey) {
-        return null;
-    }
-
-    @Override
-    public List<BatPriority> getPriorities(String projectKey) {
-        return null;
-    }
-
-    @Override
-    public List<BatUser> getUsers(String projectKey) {
         return null;
     }
 
@@ -48,20 +40,5 @@ public class TesTracker extends BATracker {
     @Override
     public List<BatIssue> searchBatIssues(String projectKey, BatSearchQuery query, int count) {
         return null;
-    }
-
-    @Override
-    public BatComment addComment(String projectKey, int issueId, BatComment batComment) {
-        return null;
-    }
-
-    @Override
-    public List<BatComment> getComments(String projectKey, int issueId) {
-        return null;
-    }
-
-    @Override
-    protected boolean isContentMatching(BugAuditContent fromBug, String fromTrackerIssue) {
-        return false;
     }
 }

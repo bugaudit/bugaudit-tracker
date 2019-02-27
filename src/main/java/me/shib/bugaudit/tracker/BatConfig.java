@@ -21,12 +21,15 @@ public final class BatConfig {
     private static transient final String batConfigFileEnv = "BUGAUDIT_TRACKER_CONFIG";
     private static transient final String batProjectEnv = "BUGAUDIT_TRACKER_PROJECT";
     private static transient final String batIssueTypeEnv = "BUGAUDIT_TRACKER_ISSUETYPE";
+    private static transient final String batAssigneeEnv = "BUGAUDIT_TRACKER_ASSIGNEE";
+    private static transient final String batSubscribersEnv = "BUGAUDIT_TRACKER_SUBSCRIBERS";
     private static transient final String batTrackerNameEnv = "BUGAUDIT_TRACKER_NAME";
     private static transient final String defaultBatConfigFilePath = "bat-config.json";
 
     private static transient BatConfig config;
 
     private transient BATracker tracker;
+    private transient Map<Integer, String> reversePriorityMap;
 
     private String trackerName;
     private String project;
@@ -36,6 +39,7 @@ public final class BatConfig {
     private boolean reprioritizeAllowed;
     private boolean deprioritizeAllowed;
     private boolean closingAllowed;
+    private Map<String, Integer> priorityMap;
     private Map<String, String> customFields;
     private Users users;
     private HashMap<String, List<String>> transitions;
@@ -99,11 +103,13 @@ public final class BatConfig {
             issueType = System.getenv(batIssueTypeEnv);
         }
         nullValidation(issueType, "issueType");
+        nullValidation(priorityMap, "priorityMap");
         if (customFields == null) {
             customFields = new HashMap<>();
         }
-        nullValidation(users, "users");
-        users.validate();
+        if (users == null) {
+            users = new Users();
+        }
         if (resolvedStatuses == null) {
             resolvedStatuses = new ArrayList<>();
         }
@@ -270,9 +276,33 @@ public final class BatConfig {
         return customFields;
     }
 
+    public String getPriorityName(int priority) {
+        if (reversePriorityMap == null) {
+            reversePriorityMap = new HashMap<>();
+            for (String name : priorityMap.keySet()) {
+                reversePriorityMap.put(priorityMap.get(name), name);
+            }
+        }
+        return reversePriorityMap.get(priority);
+    }
+
+    public int getPriorityValue(String priorityName) {
+        return priorityMap.get(priorityName);
+    }
+
     class Users {
         private String assignee;
         private List<String> subscribers;
+
+        private Users() throws BugAuditException {
+            this.assignee = System.getenv(batAssigneeEnv);
+            nullValidation(assignee, "users.assignee");
+            String subs = System.getenv(batSubscribersEnv);
+            this.subscribers = new ArrayList<>();
+            if (subs != null && !subs.isEmpty()) {
+                this.subscribers.addAll(Arrays.asList(subs.split(",")));
+            }
+        }
 
         String getAssignee() {
             return assignee;
@@ -280,13 +310,6 @@ public final class BatConfig {
 
         List<String> getSubscribers() {
             return subscribers;
-        }
-
-        private void validate() throws BugAuditException {
-            nullValidation(assignee, "assignee");
-            if (this.subscribers == null) {
-                users.subscribers = new ArrayList<>();
-            }
         }
     }
 

@@ -7,6 +7,12 @@
   "reprioritizeAllowed": true,
   "deprioritizeAllowed": true,
   "closingAllowed": true,
+  "priorityMap": {
+    "Urgent": 1,
+    "High": 2,
+    "Medium": 3,
+    "Low": 4
+  },
   "customFields": {
     "customfield_13612": "13616",
     "dueBy": "May 22, 2018"

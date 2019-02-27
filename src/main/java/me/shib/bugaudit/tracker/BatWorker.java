@@ -81,7 +81,7 @@ public abstract class BatWorker {
         if (issueUpdated) {
             batIssue = tracker.updateIssue(batIssue, batIssueFactory);
             if (!comment.toString().isEmpty()) {
-                batIssue.addComment(comment.toString());
+                batIssue.addComment(new BugAuditContent(comment.toString()));
             }
         }
 
@@ -137,7 +137,7 @@ public abstract class BatWorker {
             if (issue.getReporter() != null) {
                 comment.append("\n[~").append(issue.getReporter()).append("]");
             }
-            issue.addComment(comment.toString());
+            issue.addComment(new BugAuditContent(comment.toString()));
             commented = true;
         }
         System.out.print("\n");
@@ -168,7 +168,7 @@ public abstract class BatWorker {
             if (issue.getReporter() != null) {
                 comment.append("\n[~").append(issue.getReporter()).append("]");
             }
-            issue.addComment(comment.toString());
+            issue.addComment(new BugAuditContent(comment.toString()));
             commented = true;
         }
         System.out.print("\n");

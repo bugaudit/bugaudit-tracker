@@ -1,43 +1,39 @@
 package me.shib.bugaudit.tracker;
 
+import me.shib.bugaudit.commons.BugAuditContent;
+
 import java.util.List;
 
 public abstract class BatIssue {
 
     protected transient BATracker tracker;
 
-    BatIssue(BATracker tracker) {
+    protected BatIssue(BATracker tracker) {
         this.tracker = tracker;
     }
 
-    public abstract String getProject();
+    protected abstract void refresh();
 
-    public abstract String getIssueType();
+    protected abstract String getKey();
 
-    public abstract void refresh();
+    protected abstract String getTitle();
 
-    public abstract String getId();
+    protected abstract String getDescription();
 
-    public abstract String getKey();
+    protected abstract String getStatus();
 
-    public abstract String getTitle();
+    protected abstract BatPriority getPriority();
 
-    public abstract String getDescription();
+    protected abstract BatUser getReporter();
 
-    public abstract String getStatus();
+    protected abstract BatUser getAssignee();
 
-    public abstract BatPriority getPriority();
+    protected abstract List<BatUser> getSubscribers();
 
-    public abstract BatUser getReporter();
+    protected abstract List<String> getLabels();
 
-    public abstract BatUser getAssignee();
+    protected abstract List<BatComment> getComments();
 
-    public abstract List<BatUser> getWatchers();
-
-    public abstract List<String> getLabels();
-
-    public abstract List<BatComment> getComments();
-
-    public abstract void addComment(String comment);
+    protected abstract void addComment(BugAuditContent comment);
 
 }

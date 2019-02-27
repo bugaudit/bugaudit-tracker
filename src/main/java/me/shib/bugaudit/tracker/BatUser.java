@@ -1,4 +1,9 @@
 package me.shib.bugaudit.tracker;
 
-public class BatUser {
+public interface BatUser {
+    String getName();
+
+    String getUsername();
+
+    String getEmail();
 }
