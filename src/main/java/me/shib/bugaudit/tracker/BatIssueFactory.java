@@ -13,7 +13,7 @@ public final class BatIssueFactory {
     private String assignee;
     private List<String> subscribers;
     private String status;
-    private int priority;
+    private Integer priority;
     private Set<String> labels;
     private Map<String, String> customFields;
 
@@ -77,11 +77,11 @@ public final class BatIssueFactory {
         this.status = status;
     }
 
-    public int getPriority() {
+    public Integer getPriority() {
         return priority;
     }
 
-    void setPriority(int priority) {
+    void setPriority(Integer priority) {
         this.priority = priority;
     }
 
