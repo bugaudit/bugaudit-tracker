@@ -14,9 +14,11 @@ public final class BatConfig {
 
     static transient final int maxSearchResult = 1000;
     static transient final String issueFixedComment = "This issue has been fixed.";
-    static transient final String issueCloseComment = " Please resolve or close this issue.";
-    static transient final String issueNotFixedComment = "This issue is still not fixed in the most recent commit.";
-    static transient final String issueReopenComment = " Please Reopen this issue.";
+    static transient final String issueNotFixedComment = "Found that the issue is still not fixed.";
+    static transient final String resolveRequestComment = "Please resolve this issue.";
+    static transient final String reopenRequestComment = "Please reopen this issue.";
+    static transient final String closingNotificationComment = "Closing this issue after verification.";
+    static transient final String reopeningNotificationComment = "Reopening this issue as it is not fixed.";
 
     private static transient final String batConfigFileEnv = "BUGAUDIT_TRACKER_CONFIG";
     private static transient final String batProjectEnv = "BUGAUDIT_TRACKER_PROJECT";
@@ -28,7 +30,7 @@ public final class BatConfig {
 
     private static transient BatConfig config;
 
-    private transient BATracker tracker;
+    protected transient BATracker tracker;
     private transient Map<Integer, String> reversePriorityMap;
 
     private String trackerName;
@@ -45,7 +47,7 @@ public final class BatConfig {
     private HashMap<String, List<String>> transitions;
     private List<String> openStatuses;
     private List<String> resolvedStatuses;
-    private List<String> closeStatuses;
+    private List<String> closedStatuses;
     private List<String> ignorableLabels;
     private List<String> ignorableStatuses;
     private UpdateActions toOpen;
@@ -115,8 +117,8 @@ public final class BatConfig {
         if (openStatuses == null) {
             openStatuses = new ArrayList<>();
         }
-        if (closeStatuses == null) {
-            closeStatuses = new ArrayList<>();
+        if (closedStatuses == null) {
+            closedStatuses = new ArrayList<>();
         }
         if (ignorableLabels == null) {
             ignorableLabels = new ArrayList<>();
@@ -132,7 +134,7 @@ public final class BatConfig {
             toClose = new UpdateActions(true, true, UpdateActions.defaultCommentInterval);
         }
         toClose.validate();
-        if (closeStatuses.size() == 0) {
+        if (closedStatuses.size() == 0) {
             if (!toClose.commentable || !toClose.statusTransferable) {
                 throw new BugAuditException("Expecting at least one valid Close statuses in config");
             }
@@ -200,7 +202,7 @@ public final class BatConfig {
     }
 
     List<String> getTransitionsToClose(String currentStatus) {
-        return getTransitionPath(new ArrayList<String>(), currentStatus, closeStatuses);
+        return getTransitionPath(new ArrayList<String>(), currentStatus, closedStatuses);
     }
 
     boolean isClosingAllowed() {
@@ -230,7 +232,7 @@ public final class BatConfig {
                     return true;
                 }
             }
-            for (String s : closeStatuses) {
+            for (String s : closedStatuses) {
                 if (s.equalsIgnoreCase(status)) {
                     return true;
                 }
@@ -267,8 +269,8 @@ public final class BatConfig {
         return users;
     }
 
-    List<String> getCloseStatuses() {
-        return this.closeStatuses;
+    List<String> getClosedStatuses() {
+        return this.closedStatuses;
     }
 
     Map<String, String> getCustomFields() {
@@ -335,12 +337,12 @@ public final class BatConfig {
             return commentable;
         }
 
-        boolean isCommentable(BatIssue issue, BugAuditContent commentToAdd) {
+        boolean isCommentable(BatIssue issue, BugAuditContent commentToAdd, BATracker tracker) {
             if (commentable) {
                 issue.refresh();
                 BatComment lastComment = null;
                 for (BatComment comment : issue.getComments()) {
-                    if (comment.getBody().startsWith(commentToAdd.getContent(tracker.getContentType()))) {
+                    if (tracker.areContentsMatching(commentToAdd, comment.getBody())) {
                         lastComment = comment;
                     }
                 }

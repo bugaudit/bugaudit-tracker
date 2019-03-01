@@ -15,6 +15,12 @@ public abstract class BATracker {
         this.connection = new Connection();
     }
 
+    final boolean areContentsMatching(BugAuditContent content, String trackerFormatContent) {
+        String source = BugAuditContent.simplifyContent(content.getHtmlContent(), getContentType());
+        String dest = BugAuditContent.simplifyContent(trackerFormatContent, getContentType());
+        return source.contentEquals(dest);
+    }
+
     protected abstract BugAuditContent.Type getContentType();
 
     protected abstract BatIssue createIssue(BatIssueFactory creator);

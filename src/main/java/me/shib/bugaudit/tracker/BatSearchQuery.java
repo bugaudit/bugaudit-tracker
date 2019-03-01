@@ -29,11 +29,11 @@ public class BatSearchQuery {
     }
 
     public enum Condition {
-        status, project, label, type
+        status, label, type
     }
 
     public enum Operator {
-        is_in, is_not_in, greater_than, less_than
+        equals, not
     }
 
     public class BatQueryItem {

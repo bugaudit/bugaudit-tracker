@@ -16,6 +16,8 @@ public final class BatWorker {
     private int created;
     private int updated;
     private boolean errorFound;
+    private Map<String, Set<String>> issueLabelsMap;
+    private Map<String, BatIssue> issueMap;
 
     public BatWorker(BugAuditResult auditResult) throws BugAuditException, IOException {
         this.auditResult = auditResult;
@@ -59,35 +61,30 @@ public final class BatWorker {
         }
         boolean issueUpdated = false;
         BatIssueFactory batIssueFactory = new BatIssueFactory();
+        batIssueFactory.setProject(config.getProject());
         if (config.isSummaryUpdateAllowed() && !batIssue.getTitle().contentEquals(bug.getTitle())) {
             batIssueFactory.setTitle(bug.getTitle());
             issueUpdated = true;
         }
         if (config.isDescriptionUpdateAllowed() &&
-                !bug.getDescription().getContent(tracker.getContentType()).equalsIgnoreCase(batIssue.getDescription())) {
+                !tracker.areContentsMatching(bug.getDescription(), batIssue.getDescription())) {
             batIssueFactory.setDescription(bug.getDescription());
             issueUpdated = true;
         }
-
         StringBuilder comment = new StringBuilder();
-        if (config.isReprioritizeAllowed() || config.isDeprioritizeAllowed()) {
-            if (((batIssue.getPriority().getValue() < bug.getPriority()) && (config.isReprioritizeAllowed()))
-                    || ((batIssue.getPriority().getValue() > bug.getPriority()) && (config.isDeprioritizeAllowed()))) {
-                batIssueFactory.setPriority(bug.getPriority());
-                comment.append("Reprioritizing to *")
-                        .append(bug.getPriority())
-                        .append("* based on actual priority.");
-                issueUpdated = true;
-            }
+        if (((batIssue.getPriority().getValue() < bug.getPriority()) && (config.isReprioritizeAllowed()))
+                || ((batIssue.getPriority().getValue() > bug.getPriority()) && (config.isDeprioritizeAllowed()))) {
+            batIssueFactory.setPriority(bug.getPriority());
+            System.out.println("Reprioritizing " + batIssue.getKey() + " to " + config.getPriorityName(bug.getPriority()) + " based on actual priority.");
+            comment.append("Reprioritizing to **").append(config.getPriorityName(bug.getPriority())).append("** based on actual priority.");
+            issueUpdated = true;
         }
-
         if (issueUpdated) {
             batIssue = tracker.updateIssue(batIssue, batIssueFactory);
             if (!comment.toString().isEmpty()) {
                 batIssue.addComment(new BugAuditContent(comment.toString()));
             }
         }
-
         if (config.isOpeningAllowedForStatus(batIssue.getStatus())) {
             if (reopenIssue(batIssue)) {
                 updated++;
@@ -103,9 +100,17 @@ public final class BatWorker {
         return batIssue;
     }
 
+    private List<String> toLowerCase(List<String> list) {
+        List<String> lowerCaseList = new ArrayList<>();
+        for (String item : list) {
+            lowerCaseList.add(item.toLowerCase());
+        }
+        return lowerCaseList;
+    }
+
     private boolean isVulnerabilityExists(BatIssue batIssue, List<Bug> bugs) {
         for (Bug bug : bugs) {
-            if (batIssue.getLabels().containsAll(bug.getKeys())) {
+            if (toLowerCase(batIssue.getLabels()).containsAll(toLowerCase(new ArrayList<>(bug.getKeys())))) {
                 return true;
             }
         }
@@ -117,38 +122,33 @@ public final class BatWorker {
             System.out.println("Ignoring the issue: " + issue.getKey());
             return false;
         }
-        System.out.print("Issue: " + issue.getKey() + " has been fixed.");
+        System.out.println("Issue: " + issue.getKey() + " has been fixed.");
         boolean transitioned = false;
         if (config.toClose().isStatusTransferable() && config.isClosingTransitionAllowedForStatus(issue.getStatus())) {
             List<String> transitions = config.getTransitionsToClose(issue.getStatus());
-            System.out.println("Closing the issue " + issue.getKey() + ":");
+            System.out.println("Closing the issue " + issue.getKey() + ".");
             transitioned = transitionIssue(transitions, issue);
             if (!transitioned) {
                 System.out.println(" No path defined to Close the issue from \"" + issue.getStatus() + "\" state.");
             }
         }
         boolean commented = false;
-        if (config.toClose().isCommentable(issue, new BugAuditContent(BatConfig.issueFixedComment))) {
-            StringBuilder comment = new StringBuilder();
-            comment.append(BatConfig.issueFixedComment);
+        if (config.toClose().isCommentable(issue, new BugAuditContent(BatConfig.issueFixedComment), tracker)) {
+            issue.addComment(new BugAuditContent(BatConfig.issueFixedComment));
             if (!transitioned) {
-                comment.append(BatConfig.issueCloseComment);
+                issue.addComment(new BugAuditContent(BatConfig.resolveRequestComment));
             }
-            if (issue.getAssignee() != null) {
-                comment.append("\n[~").append(issue.getAssignee()).append("]");
-            }
-            if (issue.getReporter() != null) {
-                comment.append("\n[~").append(issue.getReporter()).append("]");
-            }
-            issue.addComment(new BugAuditContent(comment.toString()));
             commented = true;
         }
-        System.out.print("\n");
+        if (transitioned) {
+            issue.addComment(new BugAuditContent(BatConfig.closingNotificationComment));
+            commented = true;
+        }
         return transitioned || commented;
     }
 
     private boolean reopenIssue(BatIssue issue) {
-        System.out.print("Issue: " + issue.getKey() + " is resolved, but not actually fixed. ");
+        System.out.println("Issue: " + issue.getKey() + " was resolved, but not actually fixed.");
         boolean transitioned = false;
         if (config.toOpen().isStatusTransferable()) {
             List<String> transitions = config.getTransitionsToOpen(issue.getStatus());
@@ -159,20 +159,15 @@ public final class BatWorker {
             }
         }
         boolean commented = false;
-        if (config.toOpen().isCommentable(issue, new BugAuditContent(BatConfig.issueNotFixedComment))) {
-            StringBuilder comment = new StringBuilder();
-            comment.append(BatConfig.issueNotFixedComment);
+        if (config.toOpen().isCommentable(issue, new BugAuditContent(BatConfig.issueNotFixedComment), tracker)) {
+            issue.addComment(new BugAuditContent(BatConfig.issueNotFixedComment));
             if (!transitioned) {
-                comment.append(BatConfig.issueReopenComment);
+                issue.addComment(new BugAuditContent(BatConfig.reopenRequestComment));
             }
-            if (issue.getAssignee() != null) {
-                comment.append("\n[~").append(issue.getAssignee()).append("]");
-            }
-            if (issue.getReporter() != null) {
-                comment.append("\n[~").append(issue.getReporter()).append("]");
-            }
-            issue.addComment(new BugAuditContent(comment.toString()));
             commented = true;
+        }
+        if (transitioned) {
+            issue.addComment(new BugAuditContent(BatConfig.reopeningNotificationComment));
         }
         System.out.print("\n");
         return transitioned || commented;
@@ -201,14 +196,14 @@ public final class BatWorker {
     }
 
     protected void processBug(Bug bug, BugAuditResult result) throws BugAuditException {
-        BatSearchQuery searchQuery = new BatSearchQuery(BatSearchQuery.Condition.type, BatSearchQuery.Operator.is_in, config.getIssueType());
+        BatSearchQuery searchQuery = new BatSearchQuery(BatSearchQuery.Condition.type, BatSearchQuery.Operator.equals, config.getIssueType());
         Set<String> searchLabels = new HashSet<>(result.getKeys());
         searchLabels.addAll(bug.getKeys());
         searchLabels.add(result.getTool());
         searchLabels.add(result.getBugAuditLabel());
         searchLabels.add(result.getLang().toString());
         searchLabels.add(result.getRepo().toString());
-        searchQuery.add(BatSearchQuery.Condition.label, BatSearchQuery.Operator.is_in, new ArrayList<>(searchLabels));
+        searchQuery.add(BatSearchQuery.Condition.label, BatSearchQuery.Operator.equals, new ArrayList<>(searchLabels));
         List<BatIssue> batIssues = tracker.searchBatIssues(config.getProject(), searchQuery, BatConfig.maxSearchResult);
         if (batIssues.size() == 0) {
             createBatIssueForBug(bug);
@@ -246,28 +241,38 @@ public final class BatWorker {
         System.out.println(changelog);
     }
 
-    public boolean processResult() throws BugAuditException {
+    public boolean processResult() {
         System.out.println("Vulnerabilities found: " + auditResult.getBugs().size());
         for (Bug bug : auditResult.getBugs()) {
-            processBug(bug, auditResult);
+            try {
+                processBug(bug, auditResult);
+            } catch (BugAuditException e) {
+                e.printStackTrace();
+                errorFound = true;
+            }
         }
         if (config.isClosingAllowed()) {
-            BatSearchQuery searchQuery = new BatSearchQuery(BatSearchQuery.Condition.type, BatSearchQuery.Operator.is_in, config.getIssueType());
+            BatSearchQuery searchQuery = new BatSearchQuery(BatSearchQuery.Condition.type, BatSearchQuery.Operator.equals, config.getIssueType());
             List<String> tags = new ArrayList<>(auditResult.getKeys());
             tags.add(auditResult.getTool());
             tags.add(auditResult.getBugAuditLabel());
             tags.add(auditResult.getLang().toString());
             tags.add(auditResult.getRepo().toString());
-            searchQuery.add(BatSearchQuery.Condition.label, BatSearchQuery.Operator.is_in, tags);
-            searchQuery.add(BatSearchQuery.Condition.status, BatSearchQuery.Operator.is_not_in, config.getCloseStatuses());
+            searchQuery.add(BatSearchQuery.Condition.label, BatSearchQuery.Operator.equals, tags);
+            searchQuery.add(BatSearchQuery.Condition.status, BatSearchQuery.Operator.not, config.getClosedStatuses());
             List<BatIssue> batIssues = tracker.searchBatIssues(config.getProject(), searchQuery, BatConfig.maxSearchResult);
             for (BatIssue batIssue : batIssues) {
-                if (!isVulnerabilityExists(batIssue, auditResult.getBugs())) {
-                    if (closeIssue(batIssue)) {
-                        updated++;
-                    } else {
-                        System.out.println("Skipping attempt to close: " + batIssue.getKey() + ": " + batIssue.getTitle());
+                try {
+                    if (!isVulnerabilityExists(batIssue, auditResult.getBugs())) {
+                        if (closeIssue(batIssue)) {
+                            updated++;
+                        } else {
+                            System.out.println(batIssue.getKey() + ": This issue was not closed/requested to resolve");
+                        }
                     }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    errorFound = true;
                 }
             }
         }

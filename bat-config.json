@@ -1,7 +1,7 @@
 {
   "trackerName": "FreshreleaseTracker",
   "project": "TEST",
-  "issueType": "Security Bug",
+  "issueType": "Bug",
   "summaryUpdateAllowed": true,
   "descriptionUpdateAllowed": true,
   "reprioritizeAllowed": true,
@@ -14,14 +14,13 @@
     "Low": 4
   },
   "customFields": {
-    "customfield_13612": "13616",
-    "dueBy": "May 22, 2018"
+    "cf_source": "BugAudit"
   },
   "users": {
-    "assignee": "usera",
+    "assignee": "mail@example.com",
     "subscibers": [
-      "userb",
-      "bob"
+      "anothermail@example.com",
+      "test@test.com"
     ]
   },
   "transitions": {
@@ -121,20 +120,20 @@
     "Available to all customers",
     "Done"
   ],
-  "closeStatuses": [
+  "closedStatuses": [
     "Closed",
     "Security Verified"
   ],
   "ignorableLabels": [
-    "igvul",
-    "ignored-vulnerability"
+    "bugaudit-ignore",
+    "ignored-bug"
   ],
   "ignorableStatuses": [
     "Deferred",
     "Invalid"
   ],
   "toOpen": {
-    "statusTransferable": false,
+    "statusTransferable": true,
     "commentable": true,
     "commentInterval": 30
   },
