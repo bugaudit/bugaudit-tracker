@@ -34,6 +34,6 @@ public abstract class BatIssue {
 
     protected abstract List<BatComment> getComments();
 
-    protected abstract void addComment(BugAuditContent comment);
+    protected abstract BatComment addComment(BugAuditContent comment);
 
 }
