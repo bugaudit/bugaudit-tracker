@@ -16,8 +16,6 @@ public final class BatWorker {
     private int created;
     private int updated;
     private boolean errorFound;
-    private Map<String, Set<String>> issueLabelsMap;
-    private Map<String, BatIssue> issueMap;
 
     public BatWorker(BugAuditResult auditResult) throws BugAuditException, IOException {
         this.auditResult = auditResult;
