@@ -80,8 +80,8 @@ public final class BatConfig {
                 try {
                     if (trackerClass.getName().toLowerCase().endsWith(trackerName.toLowerCase())) {
                         Class<?> clazz = Class.forName(trackerClass.getName());
-                        Constructor<?> ctor = clazz.getConstructor(BatConfig.class);
-                        this.tracker = (BATracker) ctor.newInstance(this);
+                        Constructor<?> ctor = clazz.getConstructor(BATracker.Connection.class, Map.class);
+                        this.tracker = (BATracker) ctor.newInstance(new BATracker.Connection(), priorityMap);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -275,20 +275,6 @@ public final class BatConfig {
 
     Map<String, String> getCustomFields() {
         return customFields;
-    }
-
-    public String getPriorityName(int priority) {
-        if (reversePriorityMap == null) {
-            reversePriorityMap = new HashMap<>();
-            for (String name : priorityMap.keySet()) {
-                reversePriorityMap.put(priorityMap.get(name), name);
-            }
-        }
-        return reversePriorityMap.get(priority);
-    }
-
-    public int getPriorityValue(String priorityName) {
-        return priorityMap.get(priorityName);
     }
 
     class Users {

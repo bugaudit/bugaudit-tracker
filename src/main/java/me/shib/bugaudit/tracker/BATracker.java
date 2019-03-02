@@ -3,22 +3,35 @@ package me.shib.bugaudit.tracker;
 import me.shib.bugaudit.commons.BugAuditContent;
 import me.shib.bugaudit.commons.BugAuditException;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public abstract class BATracker {
 
-    protected transient BatConfig config;
-    protected transient Connection connection;
+    private transient Map<String, Integer> priorityMap;
+    private transient Map<Integer, String> reversePriorityMap;
 
-    public BATracker(BatConfig config) throws BugAuditException {
-        this.config = config;
-        this.connection = new Connection();
+    public BATracker(Connection connection, Map<String, Integer> priorityMap) {
+        this.priorityMap = priorityMap;
+        this.reversePriorityMap = new HashMap<>();
+        for (String name : priorityMap.keySet()) {
+            reversePriorityMap.put(priorityMap.get(name), name);
+        }
     }
 
     final boolean areContentsMatching(BugAuditContent content, String trackerFormatContent) {
         String source = BugAuditContent.simplifyContent(content.getHtmlContent(), getContentType());
         String dest = BugAuditContent.simplifyContent(trackerFormatContent, getContentType());
         return source.contentEquals(dest);
+    }
+
+    protected String getPriorityName(int priorityNumber) {
+        return reversePriorityMap.get(priorityNumber);
+    }
+
+    protected Integer getPriorityNumber(String priorityName) {
+        return priorityMap.get(priorityName);
     }
 
     protected abstract BugAuditContent.Type getContentType();
@@ -29,7 +42,7 @@ public abstract class BATracker {
 
     protected abstract List<BatIssue> searchBatIssues(String projectKey, BatSearchQuery query, int count);
 
-    protected class Connection {
+    public static final class Connection {
 
         private static transient final String batEndpoint = "BUGAUDIT_TRACKER_ENDPOINT";
         private static transient final String batUsername = "BUGAUDIT_TRACKER_USERNAME";
@@ -40,7 +53,23 @@ public abstract class BATracker {
         private String username;
         private String password;
 
-        private Connection() throws BugAuditException {
+        public Connection(String endpoint, String apiKey) throws BugAuditException {
+            this.endpoint = endpoint;
+            this.password = apiKey;
+            nullValidation(this.endpoint, batEndpoint);
+            nullValidation(this.password, batApiKey);
+        }
+
+        public Connection(String endpoint, String username, String password) throws BugAuditException {
+            this.endpoint = endpoint;
+            this.username = username;
+            this.password = password;
+            nullValidation(this.endpoint, batEndpoint);
+            nullValidation(this.username, batUsername);
+            nullValidation(this.password, batPassword);
+        }
+
+        public Connection() throws BugAuditException {
             this.endpoint = System.getenv(batEndpoint);
             nullValidation(this.endpoint, batEndpoint);
             this.username = System.getenv(batUsername);

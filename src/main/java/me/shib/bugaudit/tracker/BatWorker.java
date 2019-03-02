@@ -73,8 +73,8 @@ public final class BatWorker {
         if (((batIssue.getPriority().getValue() < bug.getPriority()) && (config.isReprioritizeAllowed()))
                 || ((batIssue.getPriority().getValue() > bug.getPriority()) && (config.isDeprioritizeAllowed()))) {
             batIssueFactory.setPriority(bug.getPriority());
-            System.out.println("Reprioritizing " + batIssue.getKey() + " to " + config.getPriorityName(bug.getPriority()) + " based on actual priority.");
-            comment.append("Reprioritizing to **").append(config.getPriorityName(bug.getPriority())).append("** based on actual priority.");
+            System.out.println("Reprioritizing " + batIssue.getKey() + " to " + tracker.getPriorityName(bug.getPriority()) + " based on actual priority.");
+            comment.append("Reprioritizing to **").append(tracker.getPriorityName(bug.getPriority())).append("** based on actual priority.");
             issueUpdated = true;
         }
         if (issueUpdated) {
