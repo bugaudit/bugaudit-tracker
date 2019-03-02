@@ -78,10 +78,11 @@ public final class BatConfig {
             Set<Class<? extends BATracker>> trackerClasses = reflections.getSubTypesOf(BATracker.class);
             for (Class<? extends BATracker> trackerClass : trackerClasses) {
                 try {
-                    if (trackerClass.getName().toLowerCase().endsWith(trackerName.toLowerCase())) {
+                    if (trackerClass.getName().toLowerCase().contains(trackerName.toLowerCase())) {
                         Class<?> clazz = Class.forName(trackerClass.getName());
                         Constructor<?> ctor = clazz.getConstructor(BATracker.Connection.class, Map.class);
                         this.tracker = (BATracker) ctor.newInstance(new BATracker.Connection(), priorityMap);
+                        break;
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
