@@ -21,7 +21,7 @@ public abstract class BATracker {
     }
 
     final boolean areContentsMatching(BugAuditContent content, String trackerFormatContent) {
-        String source = BugAuditContent.simplifyContent(content.getHtmlContent(), getContentType());
+        String source = BugAuditContent.simplifyContent(content.getContent(getContentType()), getContentType());
         String dest = BugAuditContent.simplifyContent(trackerFormatContent, getContentType());
         return source.contentEquals(dest);
     }
