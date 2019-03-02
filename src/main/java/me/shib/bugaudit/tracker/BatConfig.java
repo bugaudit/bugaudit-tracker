@@ -295,9 +295,8 @@ public final class BatConfig {
         private String assignee;
         private List<String> subscribers;
 
-        private Users() throws BugAuditException {
+        private Users() {
             this.assignee = System.getenv(batAssigneeEnv);
-            nullValidation(assignee, "users.assignee");
             String subs = System.getenv(batSubscribersEnv);
             this.subscribers = new ArrayList<>();
             if (subs != null && !subs.isEmpty()) {
