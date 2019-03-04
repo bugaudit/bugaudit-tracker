@@ -27,7 +27,7 @@ public final class BatWorker {
     }
 
     private BatIssue createBatIssueForBug(Bug bug) {
-        List<String> labels = new ArrayList<>();
+        Set<String> labels = new HashSet<>();
         labels.add(auditResult.getTool());
         labels.add(auditResult.getBugAuditLabel());
         labels.add(auditResult.getLang().toString());
@@ -43,7 +43,7 @@ public final class BatWorker {
         batIssueFactory.setSubscribers(config.getUsers().getSubscribers());
         batIssueFactory.setPriority(bug.getPriority());
         batIssueFactory.setDescription(bug.getDescription());
-        batIssueFactory.setLabels(labels);
+        batIssueFactory.setLabels(new ArrayList<>(labels));
         batIssueFactory.setCustomFields(config.getCustomFields());
         BatIssue batIssue = tracker.createIssue(batIssueFactory);
         System.out.println("Created new issue: " + batIssue.getKey() + " - " + batIssue.getTitle() + " with priority "
