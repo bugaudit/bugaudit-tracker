@@ -52,12 +52,13 @@ public abstract class BATracker {
         private String endpoint;
         private String username;
         private String password;
+        private String apiKey;
 
         public Connection(String endpoint, String apiKey) throws BugAuditException {
             this.endpoint = endpoint;
-            this.password = apiKey;
+            this.apiKey = apiKey;
             nullValidation(this.endpoint, batEndpoint);
-            nullValidation(this.password, batApiKey);
+            nullValidation(this.apiKey, batApiKey);
         }
 
         public Connection(String endpoint, String username, String password) throws BugAuditException {
@@ -71,14 +72,12 @@ public abstract class BATracker {
 
         public Connection() throws BugAuditException {
             this.endpoint = System.getenv(batEndpoint);
-            nullValidation(this.endpoint, batEndpoint);
             this.username = System.getenv(batUsername);
-            if (this.username == null || this.username.isEmpty()) {
-                this.password = System.getenv(batApiKey);
-                nullValidation(this.password, batApiKey);
-            } else {
-                this.password = System.getenv(batPassword);
-                nullValidation(this.password, batPassword);
+            this.password = System.getenv(batPassword);
+            this.apiKey = System.getenv(batApiKey);
+            if ((username == null || password == null) && apiKey == null) {
+                throw new BugAuditException("Set either " + batApiKey + " or "
+                        + batUsername + " & " + batPassword + " environment variables.");
             }
         }
 
@@ -101,7 +100,7 @@ public abstract class BATracker {
         }
 
         public String getApiKey() {
-            return password;
+            return apiKey;
         }
     }
 

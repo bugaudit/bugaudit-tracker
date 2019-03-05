@@ -3,7 +3,6 @@ package me.shib.bugaudit.tracker;
 import me.shib.bugaudit.commons.BugAuditContent;
 import me.shib.bugaudit.commons.BugAuditException;
 import me.shib.java.lib.jsonconfig.JsonConfig;
-import org.reflections.Reflections;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,6 +31,7 @@ public final class BatConfig {
 
     protected transient BATracker tracker;
     private transient Map<Integer, String> reversePriorityMap;
+    private transient String trackerClassName;
 
     private String trackerName;
     private String project;
@@ -73,20 +73,15 @@ public final class BatConfig {
     }
 
     synchronized BATracker getTracker() {
-        if (tracker == null && trackerName != null) {
-            Reflections reflections = new Reflections(BATracker.class.getPackage().getName());
-            Set<Class<? extends BATracker>> trackerClasses = reflections.getSubTypesOf(BATracker.class);
-            for (Class<? extends BATracker> trackerClass : trackerClasses) {
-                try {
-                    if (trackerClass.getName().toLowerCase().contains(trackerName.toLowerCase())) {
-                        Class<?> clazz = Class.forName(trackerClass.getName());
-                        Constructor<?> ctor = clazz.getConstructor(BATracker.Connection.class, Map.class);
-                        this.tracker = (BATracker) ctor.newInstance(new BATracker.Connection(), priorityMap);
-                        break;
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+        if (tracker == null) {
+            try {
+                BATracker.Connection connection = new BATracker.Connection();
+                String trackerClassName = TrackerIdentifier.getTrackerClassName(trackerName, connection.getEndpoint());
+                Class<?> clazz = Class.forName(trackerClassName);
+                Constructor<?> ctor = clazz.getConstructor(BATracker.Connection.class, Map.class);
+                this.tracker = (BATracker) ctor.newInstance(connection, priorityMap);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
         return this.tracker;
@@ -96,7 +91,6 @@ public final class BatConfig {
         if (trackerName == null || trackerName.isEmpty()) {
             trackerName = System.getenv(batTrackerNameEnv);
         }
-        nullValidation(trackerName, "trackerName");
         if (project == null || project.isEmpty()) {
             project = System.getenv(batProjectEnv);
         }
