@@ -6,7 +6,6 @@
   "descriptionUpdateAllowed": true,
   "reprioritizeAllowed": true,
   "deprioritizeAllowed": true,
-  "closingAllowed": true,
   "priorityMap": {
     "Urgent": 1,
     "High": 2,

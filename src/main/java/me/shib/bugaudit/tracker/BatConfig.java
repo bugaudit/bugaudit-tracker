@@ -40,7 +40,6 @@ public final class BatConfig {
     private boolean descriptionUpdateAllowed;
     private boolean reprioritizeAllowed;
     private boolean deprioritizeAllowed;
-    private boolean closingAllowed;
     private Map<String, Integer> priorityMap;
     private Map<String, String> customFields;
     private Users users;
@@ -201,7 +200,7 @@ public final class BatConfig {
     }
 
     boolean isClosingAllowed() {
-        return this.closingAllowed;
+        return toClose.isStatusTransferable() || toClose.isCommentable();
     }
 
     boolean isSummaryUpdateAllowed() {
