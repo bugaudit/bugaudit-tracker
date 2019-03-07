@@ -275,7 +275,7 @@ public final class BatWorker {
                         if (closeIssue(batIssue)) {
                             updated++;
                         } else {
-                            System.out.println(batIssue.getKey() + ": This issue was not closed/requested to resolve");
+                            System.out.println(batIssue.getKey() + ": No action taken now.");
                         }
                     }
                 } catch (Exception e) {
