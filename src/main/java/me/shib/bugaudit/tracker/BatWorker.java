@@ -127,22 +127,27 @@ public final class BatWorker {
             System.out.println("Closing the issue " + issue.getKey() + ".");
             transitioned = transitionIssue(transitions, issue);
             if (!transitioned) {
-                System.out.println(" No path defined to Close the issue from \"" + issue.getStatus() + "\" state.");
+                System.out.println("No path defined to Close the issue from \"" + issue.getStatus() + "\" state.");
             }
         }
-        boolean commented = false;
-        if (config.toClose().isCommentable(issue, new BugAuditContent(BatConfig.issueFixedComment), tracker)) {
-            issue.addComment(new BugAuditContent(BatConfig.issueFixedComment));
+        StringBuilder comment = new StringBuilder();
+        if (config.toClose().isCommentable(issue, new BugAuditContent(BatConfig.issueFixedComment))) {
+            comment.append("\n").append(BatConfig.issueFixedComment);
             if (!transitioned) {
-                issue.addComment(new BugAuditContent(BatConfig.resolveRequestComment));
+                comment.append("\n").append(BatConfig.resolveRequestComment);
             }
-            commented = true;
         }
         if (transitioned) {
-            issue.addComment(new BugAuditContent(BatConfig.closingNotificationComment));
-            commented = true;
+            if (!comment.toString().isEmpty()) {
+                comment.append("\n");
+            }
+            comment.append(BatConfig.closingNotificationComment);
         }
-        return transitioned || commented;
+        if (!comment.toString().isEmpty()) {
+            issue.addComment(new BugAuditContent(comment.toString()));
+            return true;
+        }
+        return transitioned;
     }
 
     private boolean reopenIssue(BatIssue issue) {
@@ -153,22 +158,27 @@ public final class BatWorker {
             System.out.println("Reopening the issue " + issue.getKey() + ":");
             transitioned = transitionIssue(transitions, issue);
             if (!transitioned) {
-                System.out.println(" No path defined to Open the issue from \"" + issue.getStatus() + "\" state.");
+                System.out.println("No path defined to Open the issue from \"" + issue.getStatus() + "\" state.");
             }
         }
-        boolean commented = false;
-        if (config.toOpen().isCommentable(issue, new BugAuditContent(BatConfig.issueNotFixedComment), tracker)) {
-            issue.addComment(new BugAuditContent(BatConfig.issueNotFixedComment));
+        StringBuilder comment = new StringBuilder();
+        if (config.toOpen().isCommentable(issue, new BugAuditContent(BatConfig.issueNotFixedComment))) {
+            comment.append(BatConfig.issueNotFixedComment);
             if (!transitioned) {
-                issue.addComment(new BugAuditContent(BatConfig.reopenRequestComment));
+                comment.append("\n").append(BatConfig.reopenRequestComment);
             }
-            commented = true;
         }
         if (transitioned) {
-            issue.addComment(new BugAuditContent(BatConfig.reopeningNotificationComment));
+            if (!comment.toString().isEmpty()) {
+                comment.append("\n");
+            }
+            comment.append(BatConfig.reopeningNotificationComment);
         }
-        System.out.print("\n");
-        return transitioned || commented;
+        if (!comment.toString().isEmpty()) {
+            issue.addComment(new BugAuditContent(comment.toString()));
+            return true;
+        }
+        return transitioned;
     }
 
     private boolean transitionIssue(List<String> transitions, BatIssue issue) {

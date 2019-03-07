@@ -317,12 +317,12 @@ public final class BatConfig {
             return commentable;
         }
 
-        boolean isCommentable(BatIssue issue, BugAuditContent commentToAdd, BATracker tracker) {
+        boolean isCommentable(BatIssue issue, BugAuditContent commentToAdd) {
             if (commentable) {
                 issue.refresh();
                 BatComment lastComment = null;
                 for (BatComment comment : issue.getComments()) {
-                    if (tracker.areContentsMatching(commentToAdd, comment.getBody())) {
+                    if (comment.getBody().toLowerCase().contains(commentToAdd.getMarkdownContent().toLowerCase())) {
                         lastComment = comment;
                     }
                 }

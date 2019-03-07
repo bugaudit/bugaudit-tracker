@@ -3,7 +3,7 @@ package me.shib.bugaudit.tracker;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BatSearchQuery {
+public final class BatSearchQuery {
 
     private List<BatQueryItem> queryItems;
 
