@@ -10,6 +10,9 @@ import java.util.*;
 
 public final class BatWorker {
 
+    private static final String batReadOnlyEnv = System.getenv("BUGAUDIT_TRACKER_READONLY");
+    private static final boolean readOnly = (batReadOnlyEnv != null) && batReadOnlyEnv.equalsIgnoreCase("TRUE");
+
     private BatConfig config;
     private BATracker tracker;
     private BugAuditResult auditResult;
@@ -214,9 +217,18 @@ public final class BatWorker {
         searchQuery.add(BatSearchQuery.Condition.label, BatSearchQuery.Operator.equals, new ArrayList<>(searchLabels));
         List<BatIssue> batIssues = tracker.searchBatIssues(config.getProject(), searchQuery, BatConfig.maxSearchResult);
         if (batIssues.size() == 0) {
-            createBatIssueForBug(bug);
+            if (readOnly) {
+                System.out.println("Read-Only Mode: Skipped creating issue: " + bug.getTitle());
+            } else {
+                createBatIssueForBug(bug);
+            }
         } else if (batIssues.size() == 1) {
-            updateBatIssueForBug(batIssues.get(0), bug);
+            if (readOnly) {
+                System.out.println("Read-Only Mode: Skipped updating issue: " +
+                        batIssues.get(0).getKey() + ": " + batIssues.get(0).getTitle());
+            } else {
+                updateBatIssueForBug(batIssues.get(0), bug);
+            }
         } else {
             throw new BugAuditException("More than one issue listed:\n"
                     + "Labels: " + Arrays.toString(bug.getKeys().toArray()) + "\n"
@@ -272,10 +284,15 @@ public final class BatWorker {
             for (BatIssue batIssue : batIssues) {
                 try {
                     if (!isVulnerabilityExists(batIssue, auditResult.getBugs())) {
-                        if (closeIssue(batIssue)) {
-                            updated++;
+                        if (readOnly) {
+                            System.out.println("Read-Only Mode: Skipped closing issue: " +
+                                    batIssue.getKey() + ": " + batIssue.getTitle());
                         } else {
-                            System.out.println(batIssue.getKey() + ": No action taken now.");
+                            if (closeIssue(batIssue)) {
+                                updated++;
+                            } else {
+                                System.out.println(batIssue.getKey() + ": No action taken now.");
+                            }
                         }
                     }
                 } catch (Exception e) {
