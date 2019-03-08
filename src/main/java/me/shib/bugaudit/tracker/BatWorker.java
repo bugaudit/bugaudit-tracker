@@ -34,7 +34,7 @@ public final class BatWorker {
         labels.add(auditResult.getRepo().toString());
         labels.add(auditResult.getTool());
         labels.addAll(auditResult.getKeys());
-        labels.addAll(bug.getKeys());
+        labels.addAll(bug.getTags());
         BatIssueFactory batIssueFactory = new BatIssueFactory();
         batIssueFactory.setProject(config.getProject());
         batIssueFactory.setTitle(bug.getTitle());
