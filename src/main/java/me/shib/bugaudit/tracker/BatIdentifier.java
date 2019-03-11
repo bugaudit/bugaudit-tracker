@@ -8,14 +8,14 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-final class TrackerIdentifier {
+final class BatIdentifier {
 
     private static final String[] freshReleaseIdentifiers = {"freshworks", "freshrelease"};
     private static final String[] jiraIdentifiers = {"atlassian"};
     private transient String endpoint;
     private transient TrackerType trackerType;
 
-    private TrackerIdentifier(String endpoint) throws BugAuditException {
+    private BatIdentifier(String endpoint) throws BugAuditException {
         if (!endpoint.toLowerCase().startsWith("http")) {
             throw new BugAuditException("Please provide a valid enpoint URL");
         }
@@ -32,7 +32,7 @@ final class TrackerIdentifier {
             }
         }
         if (null != endpoint && !endpoint.isEmpty()) {
-            return new TrackerIdentifier(endpoint).getTrackerType().getTrackerClassName();
+            return new BatIdentifier(endpoint).getTrackerType().getTrackerClassName();
         }
         throw new BugAuditException("Unable to identify the bug tracker. Please verify your configuration.");
     }

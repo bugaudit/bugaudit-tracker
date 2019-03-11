@@ -12,14 +12,14 @@ public final class BatSearchQuery {
         queryItems.add(new BatQueryItem(condition, operator, values));
     }
 
-    BatSearchQuery(Condition condition, Operator operator, String value) {
+    public BatSearchQuery(Condition condition, Operator operator, String value) {
         List<String> values = new ArrayList<>();
         values.add(value);
         this.queryItems = new ArrayList<>();
         queryItems.add(new BatQueryItem(condition, operator, values));
     }
 
-    BatSearchQuery add(Condition condition, Operator operator, List<String> values) {
+    public BatSearchQuery add(Condition condition, Operator operator, List<String> values) {
         queryItems.add(new BatQueryItem(condition, operator, values));
         return this;
     }

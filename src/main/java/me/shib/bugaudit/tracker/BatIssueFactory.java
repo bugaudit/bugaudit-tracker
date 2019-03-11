@@ -17,7 +17,7 @@ public final class BatIssueFactory {
     private Set<String> labels;
     private Map<String, String> customFields;
 
-    BatIssueFactory() {
+    public BatIssueFactory() {
         this.labels = new HashSet<>();
     }
 
@@ -33,7 +33,7 @@ public final class BatIssueFactory {
         return subscribers;
     }
 
-    void setSubscribers(List<String> subscribers) {
+    public void setSubscribers(List<String> subscribers) {
         this.subscribers = subscribers;
     }
 
@@ -41,7 +41,7 @@ public final class BatIssueFactory {
         return project;
     }
 
-    void setProject(String project) {
+    public void setProject(String project) {
         this.project = project;
     }
 
@@ -49,7 +49,7 @@ public final class BatIssueFactory {
         return issueType;
     }
 
-    void setIssueType(String issueType) {
+    public void setIssueType(String issueType) {
         this.issueType = issueType;
     }
 
@@ -57,7 +57,7 @@ public final class BatIssueFactory {
         return title;
     }
 
-    void setTitle(String title) {
+    public void setTitle(String title) {
         this.title = title;
     }
 
@@ -65,7 +65,7 @@ public final class BatIssueFactory {
         return description;
     }
 
-    void setDescription(BugAuditContent description) {
+    public void setDescription(BugAuditContent description) {
         this.description = description;
     }
 
@@ -73,7 +73,7 @@ public final class BatIssueFactory {
         return status;
     }
 
-    void setStatus(String status) {
+    public void setStatus(String status) {
         this.status = status;
     }
 
@@ -81,7 +81,7 @@ public final class BatIssueFactory {
         return priority;
     }
 
-    void setPriority(Integer priority) {
+    public void setPriority(Integer priority) {
         this.priority = priority;
     }
 
@@ -89,7 +89,7 @@ public final class BatIssueFactory {
         return new ArrayList<>(labels);
     }
 
-    void setLabels(List<String> labels) {
+    public void setLabels(List<String> labels) {
         this.labels.addAll(labels);
     }
 
@@ -97,7 +97,7 @@ public final class BatIssueFactory {
         return customFields;
     }
 
-    void setCustomFields(Map<String, String> customFields) {
+    public void setCustomFields(Map<String, String> customFields) {
         this.customFields = customFields;
     }
 }

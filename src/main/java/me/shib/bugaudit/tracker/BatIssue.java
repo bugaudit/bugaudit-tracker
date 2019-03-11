@@ -6,23 +6,23 @@ import java.util.List;
 
 public abstract class BatIssue {
 
-    protected transient BATracker tracker;
+    protected transient BugAuditTracker tracker;
 
-    protected BatIssue(BATracker tracker) {
+    protected BatIssue(BugAuditTracker tracker) {
         this.tracker = tracker;
     }
 
-    protected abstract void refresh();
+    public abstract void refresh();
 
-    protected abstract String getKey();
+    public abstract String getKey();
 
-    protected abstract String getTitle();
+    public abstract String getTitle();
 
-    protected abstract String getDescription();
+    public abstract String getDescription();
 
-    protected abstract String getStatus();
+    public abstract String getStatus();
 
-    protected abstract BatPriority getPriority();
+    public abstract BatPriority getPriority();
 
     protected abstract BatUser getReporter();
 
@@ -30,10 +30,10 @@ public abstract class BatIssue {
 
     protected abstract List<BatUser> getSubscribers();
 
-    protected abstract List<String> getLabels();
+    public abstract List<String> getLabels();
 
-    protected abstract List<BatComment> getComments();
+    public abstract List<BatComment> getComments();
 
-    protected abstract BatComment addComment(BugAuditContent comment);
+    public abstract BatComment addComment(BugAuditContent comment);
 
 }

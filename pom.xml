@@ -145,11 +145,6 @@
             <artifactId>bugaudit-commons</artifactId>
             <version>0.0.1</version>
         </dependency>
-        <dependency>
-            <groupId>me.shib.java.lib</groupId>
-            <artifactId>jsonutils</artifactId>
-            <version>0.0.2</version>
-        </dependency>
     </dependencies>
 
 </project>
