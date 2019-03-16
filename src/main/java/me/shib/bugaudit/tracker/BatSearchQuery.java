@@ -7,20 +7,29 @@ public final class BatSearchQuery {
 
     private List<BatQueryItem> queryItems;
 
-    BatSearchQuery(Condition condition, Operator operator, List<String> values) {
+    public BatSearchQuery() {
         this.queryItems = new ArrayList<>();
-        queryItems.add(new BatQueryItem(condition, operator, values));
+    }
+
+    public BatSearchQuery(Condition condition, Operator operator, List<String> values) {
+        this();
+        add(condition, operator, values);
     }
 
     public BatSearchQuery(Condition condition, Operator operator, String value) {
-        List<String> values = new ArrayList<>();
-        values.add(value);
-        this.queryItems = new ArrayList<>();
-        queryItems.add(new BatQueryItem(condition, operator, values));
+        this();
+        add(condition, operator, value);
     }
 
     public BatSearchQuery add(Condition condition, Operator operator, List<String> values) {
         queryItems.add(new BatQueryItem(condition, operator, values));
+        return this;
+    }
+
+    public BatSearchQuery add(Condition condition, Operator operator, String value) {
+        List<String> values = new ArrayList<>();
+        values.add(value);
+        add(condition, operator, values);
         return this;
     }
 
