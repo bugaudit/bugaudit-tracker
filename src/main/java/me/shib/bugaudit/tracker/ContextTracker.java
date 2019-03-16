@@ -46,6 +46,7 @@ public final class ContextTracker extends BugAuditTracker {
     @Override
     public BatIssue createIssue(BatIssueFactory creator) {
         BatIssue batIssue = tracker.createIssue(creator);
+        addCreatedIssueKey(batIssue.getKey());
         addToContext(batIssue);
         return batIssue;
     }
@@ -53,26 +54,9 @@ public final class ContextTracker extends BugAuditTracker {
     @Override
     public BatIssue updateIssue(BatIssue issue, BatIssueFactory updater) {
         BatIssue batIssue = tracker.updateIssue(issue, updater);
+        addUpdatedIssueKey(batIssue.getKey());
         addToContext(batIssue);
         return batIssue;
-    }
-
-    private boolean isStringPresentInList(List<String> searchIn, String searchString) {
-        for (String s : searchIn) {
-            if (s.equalsIgnoreCase(searchString)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean isListSubsetOfList(List<String> searchIn, List<String> searchWith) {
-        for (String s : searchWith) {
-            if (!isStringPresentInList(searchIn, s)) {
-                return false;
-            }
-        }
-        return true;
     }
 
     private boolean isLabelsInIssue(BatIssue issue, List<String> labels) {

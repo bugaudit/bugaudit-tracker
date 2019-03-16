@@ -83,6 +83,8 @@ public final class ContextIssue extends BatIssue {
 
     @Override
     public BatComment addComment(BugAuditContent comment) {
-        return issue.addComment(comment);
+        BatComment batComment = issue.addComment(comment);
+        tracker.addCommentedIssueKey(issue.getKey());
+        return batComment;
     }
 }

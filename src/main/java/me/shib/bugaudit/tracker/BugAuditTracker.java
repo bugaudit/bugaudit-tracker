@@ -4,9 +4,7 @@ import me.shib.bugaudit.commons.BugAuditContent;
 import me.shib.bugaudit.commons.BugAuditException;
 
 import java.lang.reflect.Constructor;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public abstract class BugAuditTracker {
 
@@ -15,6 +13,9 @@ public abstract class BugAuditTracker {
     private transient Connection connection;
     private transient Map<String, Integer> priorityMap;
     private transient Map<Integer, String> reversePriorityMap;
+    private transient Set<String> createdIssues;
+    private transient Set<String> updatedIssues;
+    private transient Set<String> commentedIssues;
 
     protected BugAuditTracker(Connection connection, Map<String, Integer> priorityMap) {
         this.connection = connection;
@@ -23,6 +24,9 @@ public abstract class BugAuditTracker {
         for (String name : priorityMap.keySet()) {
             reversePriorityMap.put(priorityMap.get(name), name);
         }
+        createdIssues = new HashSet<>();
+        updatedIssues = new HashSet<>();
+        commentedIssues = new HashSet<>();
     }
 
     public static synchronized BugAuditTracker getTracker(Map<String, Integer> priorityMap, BatSearchQuery contextQuery, List<String> projects) {
@@ -46,6 +50,30 @@ public abstract class BugAuditTracker {
 
     public static synchronized BugAuditTracker getTracker(Map<String, Integer> priorityMap) {
         return getTracker(priorityMap, null, null);
+    }
+
+    void addCreatedIssueKey(String issueKey) {
+        createdIssues.add(issueKey);
+    }
+
+    void addUpdatedIssueKey(String issueKey) {
+        updatedIssues.add(issueKey);
+    }
+
+    void addCommentedIssueKey(String issueKey) {
+        commentedIssues.add(issueKey);
+    }
+
+    public List<String> getCreatedIssues() {
+        return new ArrayList<>(createdIssues);
+    }
+
+    public List<String> getUpdatedIssues() {
+        return new ArrayList<>(updatedIssues);
+    }
+
+    public List<String> getCommentedIssues() {
+        return new ArrayList<>(commentedIssues);
     }
 
     Connection getConnection() {
