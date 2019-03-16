@@ -12,10 +12,12 @@ public abstract class BugAuditTracker {
 
     private static transient final String batTrackerNameEnv = "BUGAUDIT_TRACKER_NAME";
     private static transient BugAuditTracker tracker;
+    private transient Connection connection;
     private transient Map<String, Integer> priorityMap;
     private transient Map<Integer, String> reversePriorityMap;
 
     protected BugAuditTracker(Connection connection, Map<String, Integer> priorityMap) {
+        this.connection = connection;
         this.priorityMap = priorityMap;
         this.reversePriorityMap = new HashMap<>();
         for (String name : priorityMap.keySet()) {
@@ -23,7 +25,7 @@ public abstract class BugAuditTracker {
         }
     }
 
-    public static synchronized BugAuditTracker getTracker(Map<String, Integer> priorityMap) {
+    public static synchronized BugAuditTracker getTracker(Map<String, Integer> priorityMap, BatSearchQuery contextQuery, List<String> projects) {
         String trackerName = System.getenv(batTrackerNameEnv);
         if (tracker == null) {
             try {
@@ -32,11 +34,26 @@ public abstract class BugAuditTracker {
                 Class<?> clazz = Class.forName(trackerClassName);
                 Constructor<?> constructor = clazz.getConstructor(BugAuditTracker.Connection.class, Map.class);
                 tracker = (BugAuditTracker) constructor.newInstance(connection, priorityMap);
+                if (contextQuery != null && projects != null && !projects.isEmpty()) {
+                    tracker = new ContextTracker(tracker, contextQuery, projects);
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
         return tracker;
+    }
+
+    public static synchronized BugAuditTracker getTracker(Map<String, Integer> priorityMap) {
+        return getTracker(priorityMap, null, null);
+    }
+
+    Connection getConnection() {
+        return connection;
+    }
+
+    Map<String, Integer> getPriorityMap() {
+        return priorityMap;
     }
 
     public final boolean areContentsMatching(BugAuditContent content, String trackerFormatContent) {
@@ -60,6 +77,7 @@ public abstract class BugAuditTracker {
     public abstract BatIssue updateIssue(BatIssue issue, BatIssueFactory updater);
 
     public abstract List<BatIssue> searchBatIssues(String projectKey, BatSearchQuery query, int count);
+
 
     public static final class Connection {
 

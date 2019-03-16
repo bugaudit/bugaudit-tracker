@@ -16,9 +16,13 @@ public abstract class BatIssue {
 
     public abstract String getKey();
 
+    public abstract String getProjectKey();
+
     public abstract String getTitle();
 
     public abstract String getDescription();
+
+    public abstract String getType();
 
     public abstract String getStatus();
 
