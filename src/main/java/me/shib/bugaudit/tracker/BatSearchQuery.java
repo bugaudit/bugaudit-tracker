@@ -42,7 +42,7 @@ public final class BatSearchQuery {
     }
 
     public enum Operator {
-        equals, not
+        matching, not_matching
     }
 
     public class BatQueryItem {

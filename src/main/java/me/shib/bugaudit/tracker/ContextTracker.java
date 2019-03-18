@@ -95,12 +95,12 @@ public final class ContextTracker extends BugAuditTracker {
                             issue.refresh();
                         }
                         switch (queryItem.getOperator()) {
-                            case equals:
+                            case matching:
                                 if (isLabelsInIssue(issue, queryItem.getValues())) {
                                     labelFilterList.add(issue);
                                 }
                                 break;
-                            case not:
+                            case not_matching:
                                 if (isLabelsNotInIssue(issue, queryItem.getValues())) {
                                     labelFilterList.add(issue);
                                 }
@@ -113,12 +113,12 @@ public final class ContextTracker extends BugAuditTracker {
                     List<BatIssue> statusFilterList = new ArrayList<>();
                     for (BatIssue issue : filteredIssues) {
                         switch (queryItem.getOperator()) {
-                            case equals:
+                            case matching:
                                 if (queryItem.getValues().contains(issue.getStatus())) {
                                     statusFilterList.add(issue);
                                 }
                                 break;
-                            case not:
+                            case not_matching:
                                 if (!queryItem.getValues().contains(issue.getStatus())) {
                                     statusFilterList.add(issue);
                                 }
@@ -131,12 +131,12 @@ public final class ContextTracker extends BugAuditTracker {
                     List<BatIssue> typeFilterList = new ArrayList<>();
                     for (BatIssue issue : filteredIssues) {
                         switch (queryItem.getOperator()) {
-                            case equals:
+                            case matching:
                                 if (queryItem.getValues().contains(issue.getType())) {
                                     typeFilterList.add(issue);
                                 }
                                 break;
-                            case not:
+                            case not_matching:
                                 if (!queryItem.getValues().contains(issue.getType())) {
                                     typeFilterList.add(issue);
                                 }
