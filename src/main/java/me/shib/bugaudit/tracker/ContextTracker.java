@@ -59,9 +59,18 @@ public final class ContextTracker extends BugAuditTracker {
         return batIssue;
     }
 
+    private boolean isCaseInsensitiveStringInList(String str, List<String> list) {
+        for (String item : list) {
+            if (item.equalsIgnoreCase(str)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private boolean isLabelsInIssue(BatIssue issue, List<String> labels) {
         for (String label : labels) {
-            if (issue.getLabels().contains(label)) {
+            if (isCaseInsensitiveStringInList(label, issue.getLabels())) {
                 return true;
             }
         }
@@ -70,7 +79,7 @@ public final class ContextTracker extends BugAuditTracker {
 
     private boolean isLabelsNotInIssue(BatIssue issue, List<String> labels) {
         for (String label : labels) {
-            if (issue.getLabels().contains(label)) {
+            if (isCaseInsensitiveStringInList(label, issue.getLabels())) {
                 return false;
             }
         }
