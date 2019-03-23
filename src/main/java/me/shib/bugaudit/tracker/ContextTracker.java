@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public final class ContextTracker extends BugAuditTracker {
+final class ContextTracker extends BugAuditTracker {
 
     private static final int queryResultSize = 10000;
 
@@ -53,10 +53,10 @@ public final class ContextTracker extends BugAuditTracker {
 
     @Override
     public BatIssue updateIssue(BatIssue issue, BatIssueFactory updater) {
-        BatIssue batIssue = tracker.updateIssue(issue, updater);
-        addUpdatedIssueKey(batIssue.getKey());
-        addToContext(batIssue);
-        return batIssue;
+        issue = tracker.updateIssue(issue, updater);
+        addUpdatedIssueKey(issue.getKey());
+        addToContext(issue);
+        return issue;
     }
 
     private boolean isCaseInsensitiveStringInList(String str, List<String> list) {

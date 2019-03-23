@@ -9,6 +9,7 @@ import java.util.*;
 public abstract class BugAuditTracker {
 
     private static transient final String batTrackerNameEnv = "BUGAUDIT_TRACKER_NAME";
+    private static transient final String batTrackerReadOnlyEnv = "BUGAUDIT_TRACKER_NAME";
     private static transient BugAuditTracker tracker;
     private transient Connection connection;
     private transient Map<String, Integer> priorityMap;
@@ -40,6 +41,9 @@ public abstract class BugAuditTracker {
                 tracker = (BugAuditTracker) constructor.newInstance(connection, priorityMap);
                 if (contextQuery != null && projects != null && !projects.isEmpty()) {
                     tracker = new ContextTracker(tracker, contextQuery, projects);
+                }
+                if (System.getenv(batTrackerReadOnlyEnv) != null && System.getenv(batTrackerReadOnlyEnv).equalsIgnoreCase("TRUE")) {
+                    tracker = new DummyTracker(tracker);
                 }
             } catch (Exception e) {
                 e.printStackTrace();

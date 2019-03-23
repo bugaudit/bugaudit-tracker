@@ -4,12 +4,12 @@ import me.shib.bugaudit.commons.BugAuditContent;
 
 import java.util.List;
 
-public final class ContextIssue extends BatIssue {
+final class ContextIssue extends BatIssue {
 
     private transient ContextTracker tracker;
     private transient BatIssue issue;
 
-    protected ContextIssue(ContextTracker tracker, BatIssue issue) {
+    ContextIssue(ContextTracker tracker, BatIssue issue) {
         super(tracker);
         this.tracker = tracker;
         this.issue = issue;
