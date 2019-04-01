@@ -2,6 +2,7 @@ package me.shib.bugaudit.tracker;
 
 import me.shib.bugaudit.commons.BugAuditContent;
 
+import java.util.Date;
 import java.util.List;
 
 final class ContextIssue extends BatIssue {
@@ -54,6 +55,21 @@ final class ContextIssue extends BatIssue {
     @Override
     public BatPriority getPriority() {
         return issue.getPriority();
+    }
+
+    @Override
+    public Date getCreatedDate() {
+        return issue.getCreatedDate();
+    }
+
+    @Override
+    public Date getUpdatedDate() {
+        return issue.getUpdatedDate();
+    }
+
+    @Override
+    public Date getDueDate() {
+        return issue.getDueDate();
     }
 
     @Override

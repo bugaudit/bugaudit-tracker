@@ -71,6 +71,21 @@ final class DummyIssue extends BatIssue {
         };
     }
 
+    @Override
+    public Date getCreatedDate() {
+        return date;
+    }
+
+    @Override
+    public Date getUpdatedDate() {
+        return date;
+    }
+
+    @Override
+    public Date getDueDate() {
+        return date;
+    }
+
     private BatUser getDummyUser() {
         return new BatUser() {
             @Override
@@ -136,7 +151,12 @@ final class DummyIssue extends BatIssue {
         }
 
         @Override
-        public Date getUpdated() {
+        public Date getCreatedDate() {
+            return date;
+        }
+
+        @Override
+        public Date getUpdatedDate() {
             return date;
         }
     }

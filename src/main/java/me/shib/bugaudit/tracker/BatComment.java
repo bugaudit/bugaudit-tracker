@@ -5,5 +5,7 @@ import java.util.Date;
 public interface BatComment {
     String getBody();
 
-    Date getUpdated();
+    Date getCreatedDate();
+
+    Date getUpdatedDate();
 }

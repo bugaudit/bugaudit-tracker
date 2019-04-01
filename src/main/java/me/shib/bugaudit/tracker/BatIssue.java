@@ -2,6 +2,7 @@ package me.shib.bugaudit.tracker;
 
 import me.shib.bugaudit.commons.BugAuditContent;
 
+import java.util.Date;
 import java.util.List;
 
 public abstract class BatIssue {
@@ -27,6 +28,12 @@ public abstract class BatIssue {
     public abstract String getStatus();
 
     public abstract BatPriority getPriority();
+
+    public abstract Date getCreatedDate();
+
+    public abstract Date getUpdatedDate();
+
+    public abstract Date getDueDate();
 
     protected abstract BatUser getReporter();
 

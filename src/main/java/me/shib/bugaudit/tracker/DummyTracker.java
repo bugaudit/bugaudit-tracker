@@ -8,7 +8,7 @@ public final class DummyTracker extends BugAuditTracker {
 
     private BugAuditTracker tracker;
 
-    protected DummyTracker(BugAuditTracker tracker) {
+    DummyTracker(BugAuditTracker tracker) {
         super(tracker.getConnection(), tracker.getPriorityMap());
         this.tracker = tracker;
     }
