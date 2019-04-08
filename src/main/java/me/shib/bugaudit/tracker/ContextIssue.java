@@ -93,6 +93,11 @@ final class ContextIssue extends BatIssue {
     }
 
     @Override
+    public Object getCustomField(String identifier) {
+        return issue.getCustomField(identifier);
+    }
+
+    @Override
     public List<BatComment> getComments() {
         return issue.getComments();
     }

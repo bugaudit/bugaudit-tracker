@@ -2,14 +2,16 @@ package me.shib.bugaudit.tracker;
 
 import me.shib.bugaudit.commons.BugAuditContent;
 import me.shib.bugaudit.commons.BugAuditException;
+import org.reflections.Reflections;
 
 import java.lang.reflect.Constructor;
 import java.util.*;
 
 public abstract class BugAuditTracker {
 
+    private static final Reflections reflections = new Reflections(BugAuditTracker.class.getPackage().getName());
     private static transient final String batTrackerNameEnv = "BUGAUDIT_TRACKER_NAME";
-    private static transient final String batTrackerReadOnlyEnv = "BUGAUDIT_TRACKER_NAME";
+    private static transient final String batTrackerReadOnlyEnv = "BUGAUDIT_TRACKER_READONLY";
     private static transient BugAuditTracker tracker;
     private transient Connection connection;
     private transient Map<String, Integer> priorityMap;
@@ -32,18 +34,26 @@ public abstract class BugAuditTracker {
 
     public static synchronized BugAuditTracker getTracker(Map<String, Integer> priorityMap, BatSearchQuery contextQuery, List<String> projects) {
         String trackerName = System.getenv(batTrackerNameEnv);
-        if (tracker == null) {
+        if (tracker == null && trackerName != null && !trackerName.isEmpty()) {
             try {
                 BugAuditTracker.Connection connection = new BugAuditTracker.Connection();
-                String trackerClassName = BatIdentifier.getTrackerClassName(trackerName, connection.getEndpoint());
-                Class<?> clazz = Class.forName(trackerClassName);
-                Constructor<?> constructor = clazz.getConstructor(BugAuditTracker.Connection.class, Map.class);
-                tracker = (BugAuditTracker) constructor.newInstance(connection, priorityMap);
-                if (contextQuery != null && projects != null && !projects.isEmpty()) {
-                    tracker = new ContextTracker(tracker, contextQuery, projects);
+                Set<Class<? extends BugAuditTracker>> scannerClasses = reflections.getSubTypesOf(BugAuditTracker.class);
+                String trackerClassName = null;
+                for (Class<? extends BugAuditTracker> scannerClass : scannerClasses) {
+                    if (scannerClass.getName().toLowerCase().endsWith(trackerName.toLowerCase())) {
+                        trackerClassName = scannerClass.getName();
+                    }
                 }
-                if (System.getenv(batTrackerReadOnlyEnv) != null && System.getenv(batTrackerReadOnlyEnv).equalsIgnoreCase("TRUE")) {
-                    tracker = new DummyTracker(tracker);
+                if (trackerClassName != null) {
+                    Class<?> clazz = Class.forName(trackerClassName);
+                    Constructor<?> constructor = clazz.getConstructor(BugAuditTracker.Connection.class, Map.class);
+                    tracker = (BugAuditTracker) constructor.newInstance(connection, priorityMap);
+                    if (contextQuery != null && projects != null && !projects.isEmpty()) {
+                        tracker = new ContextTracker(tracker, contextQuery, projects);
+                    }
+                    if (System.getenv(batTrackerReadOnlyEnv) != null && System.getenv(batTrackerReadOnlyEnv).equalsIgnoreCase("TRUE")) {
+                        tracker = new DummyTracker(tracker);
+                    }
                 }
             } catch (Exception e) {
                 e.printStackTrace();

@@ -128,6 +128,11 @@ final class DummyIssue extends BatIssue {
     }
 
     @Override
+    public Object getCustomField(String identifier) {
+        return null;
+    }
+
+    @Override
     public List<BatComment> getComments() {
         return new ArrayList<>();
     }

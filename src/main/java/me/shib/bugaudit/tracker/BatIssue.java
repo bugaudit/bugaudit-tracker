@@ -43,6 +43,8 @@ public abstract class BatIssue {
 
     public abstract List<String> getLabels();
 
+    public abstract Object getCustomField(String identifier);
+
     public abstract List<BatComment> getComments();
 
     public abstract BatComment addComment(BugAuditContent comment);
