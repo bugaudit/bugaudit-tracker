@@ -9,6 +9,7 @@ import java.util.*;
 
 public abstract class BugAuditTracker {
 
+    private static final Class[] excludedTrackerClasses = new Class[]{ContextTracker.class, DummyTracker.class};
     private static final Reflections reflections = new Reflections(BugAuditTracker.class.getPackage().getName());
     private static transient final String batTrackerNameEnv = "BUGAUDIT_TRACKER_NAME";
     private static transient final String batTrackerReadOnlyEnv = "BUGAUDIT_TRACKER_READONLY";
@@ -32,16 +33,25 @@ public abstract class BugAuditTracker {
         commentedIssues = new HashSet<>();
     }
 
+    private static boolean isTrackerClassExcluded(Class clazz) {
+        for (Class excludedClass : excludedTrackerClasses) {
+            if (excludedClass == clazz) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static synchronized BugAuditTracker getTracker(Map<String, Integer> priorityMap, BatSearchQuery contextQuery, List<String> projects) {
         String trackerName = System.getenv(batTrackerNameEnv);
         if (tracker == null && trackerName != null && !trackerName.isEmpty()) {
             try {
                 BugAuditTracker.Connection connection = new BugAuditTracker.Connection();
-                Set<Class<? extends BugAuditTracker>> scannerClasses = reflections.getSubTypesOf(BugAuditTracker.class);
+                Set<Class<? extends BugAuditTracker>> trackerClasses = reflections.getSubTypesOf(BugAuditTracker.class);
                 String trackerClassName = null;
-                for (Class<? extends BugAuditTracker> scannerClass : scannerClasses) {
-                    if (scannerClass.getName().toLowerCase().endsWith(trackerName.toLowerCase())) {
-                        trackerClassName = scannerClass.getName();
+                for (Class<? extends BugAuditTracker> trackerClass : trackerClasses) {
+                    if (!isTrackerClassExcluded(trackerClass) && trackerClass.getSimpleName().toLowerCase().contains(trackerName.toLowerCase())) {
+                        trackerClassName = trackerClass.getName();
                     }
                 }
                 if (trackerClassName != null) {
