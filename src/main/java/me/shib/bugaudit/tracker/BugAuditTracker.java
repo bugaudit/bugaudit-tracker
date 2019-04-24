@@ -13,7 +13,6 @@ public abstract class BugAuditTracker {
     private static final Reflections reflections = new Reflections(BugAuditTracker.class.getPackage().getName());
     private static transient final String batTrackerNameEnv = "BUGAUDIT_TRACKER_NAME";
     private static transient final String batTrackerReadOnlyEnv = "BUGAUDIT_TRACKER_READONLY";
-    private static transient BugAuditTracker tracker;
     private transient Connection connection;
     private transient Map<String, Integer> priorityMap;
     private transient Map<Integer, String> reversePriorityMap;
@@ -44,7 +43,7 @@ public abstract class BugAuditTracker {
 
     public static synchronized BugAuditTracker getTracker(Map<String, Integer> priorityMap, BatSearchQuery contextQuery, List<String> projects) {
         String trackerName = System.getenv(batTrackerNameEnv);
-        if (tracker == null && trackerName != null && !trackerName.isEmpty()) {
+        if (trackerName != null && !trackerName.isEmpty()) {
             try {
                 BugAuditTracker.Connection connection = new BugAuditTracker.Connection();
                 Set<Class<? extends BugAuditTracker>> trackerClasses = reflections.getSubTypesOf(BugAuditTracker.class);
@@ -57,19 +56,20 @@ public abstract class BugAuditTracker {
                 if (trackerClassName != null) {
                     Class<?> clazz = Class.forName(trackerClassName);
                     Constructor<?> constructor = clazz.getConstructor(BugAuditTracker.Connection.class, Map.class);
-                    tracker = (BugAuditTracker) constructor.newInstance(connection, priorityMap);
+                    BugAuditTracker tracker = (BugAuditTracker) constructor.newInstance(connection, priorityMap);
                     if (contextQuery != null && projects != null && !projects.isEmpty()) {
                         tracker = new ContextTracker(tracker, contextQuery, projects);
                     }
                     if (System.getenv(batTrackerReadOnlyEnv) != null && System.getenv(batTrackerReadOnlyEnv).equalsIgnoreCase("TRUE")) {
                         tracker = new DummyTracker(tracker);
                     }
+                    return tracker;
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-        return tracker;
+        return null;
     }
 
     public static synchronized BugAuditTracker getTracker(Map<String, Integer> priorityMap) {
