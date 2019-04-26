@@ -15,7 +15,7 @@ public final class DummyTracker extends BugAuditTracker {
 
     @Override
     protected BugAuditContent.Type getContentType() {
-        return null;
+        return tracker.getContentType();
     }
 
     @Override
