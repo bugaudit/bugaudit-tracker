@@ -1,6 +1,7 @@
 package me.shib.bugaudit.tracker;
 
 import me.shib.bugaudit.commons.BugAuditContent;
+import me.shib.bugaudit.commons.BugAuditException;
 
 import java.util.Date;
 import java.util.List;
@@ -17,7 +18,7 @@ final class ContextIssue extends BatIssue {
     }
 
     @Override
-    public void refresh() {
+    public void refresh() throws BugAuditException {
         issue.refresh();
         tracker.addToContext(this);
     }
@@ -98,12 +99,12 @@ final class ContextIssue extends BatIssue {
     }
 
     @Override
-    public List<BatComment> getComments() {
+    public List<BatComment> getComments() throws BugAuditException {
         return issue.getComments();
     }
 
     @Override
-    public BatComment addComment(BugAuditContent comment) {
+    public BatComment addComment(BugAuditContent comment) throws BugAuditException {
         BatComment batComment = issue.addComment(comment);
         tracker.addCommentedIssueKey(issue.getKey());
         return batComment;

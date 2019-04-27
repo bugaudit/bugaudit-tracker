@@ -1,6 +1,7 @@
 package me.shib.bugaudit.tracker;
 
 import me.shib.bugaudit.commons.BugAuditContent;
+import me.shib.bugaudit.commons.BugAuditException;
 
 import java.util.Date;
 import java.util.List;
@@ -13,7 +14,7 @@ public abstract class BatIssue {
         this.tracker = tracker;
     }
 
-    public abstract void refresh();
+    public abstract void refresh() throws BugAuditException;
 
     public abstract String getKey();
 
@@ -45,8 +46,8 @@ public abstract class BatIssue {
 
     public abstract Object getCustomField(String identifier);
 
-    public abstract List<BatComment> getComments();
+    public abstract List<BatComment> getComments() throws BugAuditException;
 
-    public abstract BatComment addComment(BugAuditContent comment);
+    public abstract BatComment addComment(BugAuditContent comment) throws BugAuditException;
 
 }

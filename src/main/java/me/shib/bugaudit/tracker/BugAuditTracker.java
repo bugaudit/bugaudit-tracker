@@ -124,11 +124,11 @@ public abstract class BugAuditTracker {
 
     protected abstract BugAuditContent.Type getContentType();
 
-    public abstract BatIssue createIssue(BatIssueFactory creator);
+    public abstract BatIssue createIssue(BatIssueFactory creator) throws BugAuditException;
 
-    public abstract BatIssue updateIssue(BatIssue issue, BatIssueFactory updater);
+    public abstract BatIssue updateIssue(BatIssue issue, BatIssueFactory updater) throws BugAuditException;
 
-    public abstract List<BatIssue> searchBatIssues(String projectKey, BatSearchQuery query, int count);
+    public abstract List<BatIssue> searchBatIssues(String projectKey, BatSearchQuery query, int count) throws BugAuditException;
 
 
     public static final class Connection {

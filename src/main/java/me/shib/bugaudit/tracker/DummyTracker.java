@@ -1,6 +1,7 @@
 package me.shib.bugaudit.tracker;
 
 import me.shib.bugaudit.commons.BugAuditContent;
+import me.shib.bugaudit.commons.BugAuditException;
 
 import java.util.List;
 
@@ -11,6 +12,7 @@ public final class DummyTracker extends BugAuditTracker {
     DummyTracker(BugAuditTracker tracker) {
         super(tracker.getConnection(), tracker.getPriorityMap());
         this.tracker = tracker;
+        System.out.println("Connecting to tracker in Read-Only mode");
     }
 
     @Override
@@ -25,11 +27,11 @@ public final class DummyTracker extends BugAuditTracker {
 
     @Override
     public BatIssue updateIssue(BatIssue issue, BatIssueFactory updater) {
-        return issue;
+        return new DummyIssue(this, issue);
     }
 
     @Override
-    public List<BatIssue> searchBatIssues(String projectKey, BatSearchQuery query, int count) {
+    public List<BatIssue> searchBatIssues(String projectKey, BatSearchQuery query, int count) throws BugAuditException {
         return tracker.searchBatIssues(projectKey, query, count);
     }
 }

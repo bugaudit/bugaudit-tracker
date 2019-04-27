@@ -1,6 +1,7 @@
 package me.shib.bugaudit.tracker;
 
 import me.shib.bugaudit.commons.BugAuditContent;
+import me.shib.bugaudit.commons.BugAuditException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,7 +16,7 @@ final class ContextTracker extends BugAuditTracker {
     private transient List<String> projects;
     private transient Map<String, BatIssue> contextIssueMap;
 
-    ContextTracker(BugAuditTracker tracker, BatSearchQuery contextQuery, List<String> projects) {
+    ContextTracker(BugAuditTracker tracker, BatSearchQuery contextQuery, List<String> projects) throws BugAuditException {
         super(tracker.getConnection(), tracker.getPriorityMap());
         this.tracker = tracker;
         this.projects = projects;
@@ -23,7 +24,7 @@ final class ContextTracker extends BugAuditTracker {
         populateContextIssueMap(contextQuery);
     }
 
-    private void populateContextIssueMap(BatSearchQuery contextQuery) {
+    private void populateContextIssueMap(BatSearchQuery contextQuery) throws BugAuditException {
         for (String project : projects) {
             List<BatIssue> batIssues = tracker.searchBatIssues(project, contextQuery, queryResultSize);
             for (BatIssue issue : batIssues) {
@@ -44,7 +45,7 @@ final class ContextTracker extends BugAuditTracker {
     }
 
     @Override
-    public BatIssue createIssue(BatIssueFactory creator) {
+    public BatIssue createIssue(BatIssueFactory creator) throws BugAuditException {
         BatIssue batIssue = tracker.createIssue(creator);
         addCreatedIssueKey(batIssue.getKey());
         addToContext(batIssue);
@@ -52,7 +53,7 @@ final class ContextTracker extends BugAuditTracker {
     }
 
     @Override
-    public BatIssue updateIssue(BatIssue issue, BatIssueFactory updater) {
+    public BatIssue updateIssue(BatIssue issue, BatIssueFactory updater) throws BugAuditException {
         issue = tracker.updateIssue(issue, updater);
         addUpdatedIssueKey(issue.getKey());
         addToContext(issue);
@@ -86,7 +87,7 @@ final class ContextTracker extends BugAuditTracker {
         return true;
     }
 
-    private List<BatIssue> contextualSearch(String projectKey, BatSearchQuery query) {
+    private List<BatIssue> contextualSearch(String projectKey, BatSearchQuery query) throws BugAuditException {
         List<BatIssue> filteredIssues = new ArrayList<>(contextIssueMap.values());
         List<BatIssue> projectFilterList = new ArrayList<>();
         for (BatIssue issue : filteredIssues) {
@@ -160,7 +161,7 @@ final class ContextTracker extends BugAuditTracker {
     }
 
     @Override
-    public List<BatIssue> searchBatIssues(String projectKey, BatSearchQuery query, int count) {
+    public List<BatIssue> searchBatIssues(String projectKey, BatSearchQuery query, int count) throws BugAuditException {
         return contextualSearch(projectKey, query);
     }
 }
