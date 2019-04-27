@@ -15,7 +15,7 @@ public final class BatIssueFactory {
     private String status;
     private Integer priority;
     private Set<String> labels;
-    private Map<String, String> customFields;
+    private Map<String, Object> customFields;
 
     public BatIssueFactory() {
         this.labels = new HashSet<>();
@@ -93,11 +93,11 @@ public final class BatIssueFactory {
         this.labels.addAll(labels);
     }
 
-    public Map<String, String> getCustomFields() {
+    public Map<String, Object> getCustomFields() {
         return customFields;
     }
 
-    public void setCustomFields(Map<String, String> customFields) {
+    public void setCustomFields(Map<String, Object> customFields) {
         this.customFields = customFields;
     }
 }
