@@ -35,11 +35,17 @@ final class DummyIssue extends BatIssue {
 
     @Override
     public String getKey() {
+        if (null != realIssue) {
+            return realIssue.getKey();
+        }
         return projectKey + "-" + number;
     }
 
     @Override
     public String getProjectKey() {
+        if (null != realIssue) {
+            return realIssue.getProjectKey();
+        }
         return projectKey;
     }
 
@@ -188,20 +194,22 @@ final class DummyIssue extends BatIssue {
 
     @Override
     public BatComment addComment(BugAuditContent comment) {
-        return new DummyComment();
+        return new DummyComment(comment, tracker.getContentType());
     }
 
     final class DummyComment implements BatComment {
 
         private Date date;
+        private String comment;
 
-        DummyComment() {
+        DummyComment(BugAuditContent comment, BugAuditContent.Type type) {
             this.date = new Date();
+            this.comment = comment.getContent(type);
         }
 
         @Override
         public String getBody() {
-            return "Dummy comment created at: " + date;
+            return comment;
         }
 
         @Override
