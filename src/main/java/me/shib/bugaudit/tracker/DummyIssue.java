@@ -13,90 +13,99 @@ final class DummyIssue extends BatIssue {
     private static final transient Random rand = new Random();
 
     private transient String projectKey;
-    private transient int number;
+    private transient String key;
+    private transient String title;
+    private transient String description;
+    private transient String type;
+    private transient String status;
+    private transient BatPriority priority;
     private transient Date date;
     private transient BatIssue realIssue;
+    private transient BatIssueFactory creator;
 
-    DummyIssue(BugAuditTracker tracker) {
+    DummyIssue(BugAuditTracker tracker, BatIssueFactory creator) {
         super(tracker);
-        this.projectKey = "DUMMY";
-        this.number = rand.nextInt(10000) + 1;
-        this.date = new Date();
+        this.creator = creator;
+        init(tracker);
     }
 
     DummyIssue(BugAuditTracker tracker, BatIssue issue) {
-        this(tracker);
+        super(tracker);
         this.realIssue = issue;
+        init(tracker);
+    }
+
+    private void init(BugAuditTracker tracker) {
+        this.date = new Date();
+        if (creator != null) {
+            this.projectKey = "DUMMY-" + creator.getProject();
+            this.key = projectKey + "-" + rand.nextInt(1000000) + 1000000;
+            this.title = creator.getTitle();
+            this.description = creator.getDescription().getContent(tracker.getContentType());
+            this.type = creator.getIssueType();
+            this.status = creator.getStatus();
+            this.priority = new BatPriority() {
+                @Override
+                public String getName() {
+                    return "DUMMY-PRIORITY-" + creator.getPriority();
+                }
+
+                @Override
+                public int getValue() {
+                    return creator.getPriority();
+                }
+            };
+        } else {
+            this.projectKey = "DUMMY-" + realIssue.getProjectKey();
+            this.key = "DUMMY-" + realIssue.getKey();
+            this.title = realIssue.getTitle();
+            this.description = realIssue.getDescription();
+            this.type = realIssue.getType();
+            this.status = realIssue.getStatus();
+            this.priority = realIssue.getPriority();
+        }
     }
 
     @Override
-    public void refresh() {
+    public void refresh() throws BugAuditException {
+        if (realIssue != null) {
+            realIssue.refresh();
+        }
     }
 
     @Override
     public String getKey() {
-        if (null != realIssue) {
-            return realIssue.getKey();
-        }
-        return projectKey + "-" + number;
+        return key;
     }
 
     @Override
     public String getProjectKey() {
-        if (null != realIssue) {
-            return realIssue.getProjectKey();
-        }
         return projectKey;
     }
 
     @Override
     public String getTitle() {
-        if (null != realIssue) {
-            return realIssue.getTitle();
-        }
-        return "Dummy title at " + date;
+        return title;
     }
 
     @Override
     public String getDescription() {
-        if (null != realIssue) {
-            return realIssue.getDescription();
-        }
-        return "Dummy description at " + date;
+        return description;
     }
 
     @Override
     public String getType() {
-        if (null != realIssue) {
-            return realIssue.getType();
-        }
-        return "Dummy Type";
+        return type;
     }
 
     @Override
     public String getStatus() {
-        if (null != realIssue) {
-            return realIssue.getStatus();
-        }
-        return "Dummy Status";
+        return status;
     }
 
     @Override
     public BatPriority getPriority() {
-        if (null != realIssue) {
-            return realIssue.getPriority();
-        }
-        return new BatPriority() {
-            @Override
-            public String getName() {
-                return "Dummy Priority";
-            }
-
-            @Override
-            public int getValue() {
-                return rand.nextInt(3) + 1;
-            }
-        };
+        return priority;
     }
 
     @Override

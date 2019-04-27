@@ -22,7 +22,7 @@ public final class DummyTracker extends BugAuditTracker {
 
     @Override
     public BatIssue createIssue(BatIssueFactory creator) {
-        return new DummyIssue(this);
+        return new DummyIssue(this, creator);
     }
 
     @Override
