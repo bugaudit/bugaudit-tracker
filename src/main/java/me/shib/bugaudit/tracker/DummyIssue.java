@@ -152,7 +152,7 @@ final class DummyIssue extends BatIssue {
     }
 
     @Override
-    protected BatUser getReporter() {
+    public BatUser getReporter() {
         if (null != realIssue) {
             return realIssue.getReporter();
         }
@@ -160,7 +160,7 @@ final class DummyIssue extends BatIssue {
     }
 
     @Override
-    protected BatUser getAssignee() {
+    public BatUser getAssignee() {
         if (null != realIssue) {
             return realIssue.getAssignee();
         }
@@ -168,7 +168,7 @@ final class DummyIssue extends BatIssue {
     }
 
     @Override
-    protected List<BatUser> getSubscribers() {
+    public List<BatUser> getSubscribers() {
         if (null != realIssue) {
             return realIssue.getSubscribers();
         }

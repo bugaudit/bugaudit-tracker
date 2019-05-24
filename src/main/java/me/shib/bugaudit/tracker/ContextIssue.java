@@ -74,17 +74,17 @@ final class ContextIssue extends BatIssue {
     }
 
     @Override
-    protected BatUser getReporter() {
+    public BatUser getReporter() {
         return issue.getReporter();
     }
 
     @Override
-    protected BatUser getAssignee() {
+    public BatUser getAssignee() {
         return issue.getAssignee();
     }
 
     @Override
-    protected List<BatUser> getSubscribers() {
+    public List<BatUser> getSubscribers() {
         return issue.getSubscribers();
     }
 

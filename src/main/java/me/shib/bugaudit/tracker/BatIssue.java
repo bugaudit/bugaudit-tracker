@@ -36,11 +36,11 @@ public abstract class BatIssue {
 
     public abstract Date getDueDate();
 
-    protected abstract BatUser getReporter();
+    public abstract BatUser getReporter();
 
-    protected abstract BatUser getAssignee();
+    public abstract BatUser getAssignee();
 
-    protected abstract List<BatUser> getSubscribers();
+    public abstract List<BatUser> getSubscribers();
 
     public abstract List<String> getLabels();
 
