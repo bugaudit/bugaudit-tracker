@@ -31,9 +31,8 @@ public class TesTracker extends BugAuditTracker {
     }
 
     @Override
-    public List<BatIssue> searchBatIssues(String projectKey, BatSearchQuery query, int count) {
+    public List<BatIssue> searchBatIssues(String projectKey, BatSearchQuery query) {
         System.out.println(projectKey);
-        System.out.println(count);
         return null;
     }
 }

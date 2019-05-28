@@ -10,8 +10,6 @@ import java.util.Map;
 
 final class ContextTracker extends BugAuditTracker {
 
-    private static final int queryResultSize = 10000;
-
     private transient BugAuditTracker tracker;
     private transient List<String> projects;
     private transient Map<String, BatIssue> contextIssueMap;
@@ -26,7 +24,7 @@ final class ContextTracker extends BugAuditTracker {
 
     private void populateContextIssueMap(BatSearchQuery contextQuery) throws BugAuditException {
         for (String project : projects) {
-            List<BatIssue> batIssues = tracker.searchBatIssues(project, contextQuery, queryResultSize);
+            List<BatIssue> batIssues = tracker.searchBatIssues(project, contextQuery);
             for (BatIssue issue : batIssues) {
                 addToContext(issue);
             }
@@ -161,7 +159,7 @@ final class ContextTracker extends BugAuditTracker {
     }
 
     @Override
-    public List<BatIssue> searchBatIssues(String projectKey, BatSearchQuery query, int count) throws BugAuditException {
+    public List<BatIssue> searchBatIssues(String projectKey, BatSearchQuery query) throws BugAuditException {
         return contextualSearch(projectKey, query);
     }
 }
