@@ -50,4 +50,8 @@ public abstract class BatIssue {
 
     public abstract BatComment addComment(BugAuditContent comment) throws BugAuditException;
 
+    @Override
+    public String toString() {
+        return getKey();
+    }
 }
