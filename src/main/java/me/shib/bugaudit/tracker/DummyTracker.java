@@ -3,6 +3,7 @@ package me.shib.bugaudit.tracker;
 import me.shib.bugaudit.commons.BugAuditContent;
 import me.shib.bugaudit.commons.BugAuditException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public final class DummyTracker extends BugAuditTracker {
@@ -32,6 +33,11 @@ public final class DummyTracker extends BugAuditTracker {
 
     @Override
     public List<BatIssue> searchBatIssues(String projectKey, BatSearchQuery query) throws BugAuditException {
-        return tracker.searchBatIssues(projectKey, query);
+        List<BatIssue> trackerIssues = tracker.searchBatIssues(projectKey, query);
+        List<BatIssue> dummyIssues = new ArrayList<>();
+        for (BatIssue batIssue : trackerIssues) {
+            dummyIssues.add(new DummyIssue(tracker, batIssue));
+        }
+        return dummyIssues;
     }
 }
